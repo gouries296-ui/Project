@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<header><div class="logo" style="margin-right:700px;">HONEYSHIELD</div>
+     <nav class="dashboard-nav">
+        <button type="button" id="logoutBtn" class="logout-btn" style="margin-left: 700px;">
+    Logout
+</button>
+
+
+    </nav>
+
+    </header>
+
+<body>
+
+    <!-- Protect Dashboard -->
+    <script>
+        if (sessionStorage.getItem("loggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+    </script>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+
+    <!-- =========================
+         MAIN DASHBOARD
+    ========================== -->
+
+    <main class="dashboard-container">
+
+
+        <!-- =========================
+             DASHBOARD HEADING
+        ========================== -->
+
+        <div class="dashboard-heading">
+
+            <div>
+                <span class="section-label">
+                    SECURITY MONITORING
+                </span>
+
+                <h1>Security Dashboard</h1>
+
+                <p>
+                    Monitor attacker activity and detect suspicious behavior.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             AUTOMATIC ALERT
+        ========================== -->
+
+        <div id="securityAlert" class="security-alert hidden">
+
+            <div class="alert-icon">
+                ⚠
+            </div>
+
+            <div class="alert-content">
+
+                <h3>Security Alert</h3>
+
+                <p id="alertMessage">
+                    High threat activity detected.
+                </p>
+
+            </div>
+
+            <button
+                onclick="closeAlert()"
+                class="close-alert">
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             SYSTEM STATUS
+        ========================== -->
+
+        <section class="security-status">
+
+            <div class="status-indicator"></div>
+
+            <div>
+                <h3>System Status</h3>
+
+                <p>
+                    HoneyShield is actively monitoring system activity.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             DASHBOARD STATISTICS
+        ========================== -->
+
+        <section class="dashboard-cards">
+
+            <div class="dashboard-card">
+
+                <h3>Total Events</h3>
+
+                <p id="totalEvents" class="card-number">
+                    128
+                </p>
+
+                <span>Detected activities</span>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <h3>High Threats</h3>
+
+                <p id="highThreats" class="card-number">
+                    2
+                </p>
+
+                <span>Requires attention</span>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <h3>Critical Threats</h3>
+
+                <p id="criticalThreats" class="card-number">
+                    1
+                </p>
+
+                <span>Immediate attention</span>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <h3>Alerts</h3>
+
+                <p id="alertCount" class="card-number">
+                    3
+                </p>
+
+                <span>Security alerts</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             THREAT ACTIVITIES
+        ====================================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SECURITY MONITORING
+                    </span>
+
+                    <h2>Threat Activities</h2>
+
+                    <p>
+                        Monitor suspicious activities detected
+                        by the HoneyShield system.
+                    </p>
+
+                </div>
+
+
+                <!-- ONLY ONE FILTER -->
+
+                <div class="threat-filter">
+
+                    <label for="threatFilter">
+                        Filter:
+                    </label>
+
+                    <select
+                        id="threatFilter"
+                        onchange="filterThreats()">
+
+                        <option value="all">
+                            All Threats
+                        </option>
+
+                        <option value="low">
+                            Low
+                        </option>
+
+                        <option value="medium">
+                            Medium
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+
+                        <option value="critical">
+                            Critical
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 THREAT TABLE
+            ========================== -->
+
+            <div class="threat-table">
+
+                <div class="table-header">
+
+                    <div>Timestamp</div>
+                    <div>IP Address</div>
+                    <div>File Modified</div>
+                    <div>Action</div>
+                    <div>Threat Score</div>
+                    <div>Threat Level</div>
+
+                </div>
+
+
+                <!-- HIGH -->
+
+                <div class="table-row" data-level="high">
+
+                    <div>10:42:18</div>
+
+                    <div>192.168.1.24</div>
+
+                    <div>invoice.pdf</div>
+
+                    <div>Multiple Login Attempts</div>
+
+                    <div>92</div>
+
+                    <div>
+                        <span class="threat high">
+                            HIGH
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <!-- HIGH -->
+
+                <div class="table-row" data-level="high">
+
+                    <div>10:38:45</div>
+
+                    <div>192.168.1.31</div>
+
+                    <div>backup.zip</div>
+
+                    <div>File Renamed</div>
+
+                    <div>84</div>
+
+                    <div>
+                        <span class="threat high">
+                            HIGH
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <!-- MEDIUM -->
+
+                <div class="table-row" data-level="medium">
+
+                    <div>10:31:12</div>
+
+                    <div>192.168.1.18</div>
+
+                    <div>report.docx</div>
+
+                    <div>File Modified</div>
+
+                    <div>67</div>
+
+                    <div>
+                        <span class="threat medium">
+                            MEDIUM
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <!-- MEDIUM -->
+
+                <div class="table-row" data-level="medium">
+
+                    <div>10:25:09</div>
+
+                    <div>192.168.1.42</div>
+
+                    <div>notes.txt</div>
+
+                    <div>Unusual File Access</div>
+
+                    <div>54</div>
+
+                    <div>
+                        <span class="threat medium">
+                            MEDIUM
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <!-- LOW -->
+
+                <div class="table-row" data-level="low">
+
+                    <div>10:19:33</div>
+
+                    <div>192.168.1.15</div>
+
+                    <div>test.txt</div>
+
+                    <div>File Access</div>
+
+                    <div>28</div>
+
+                    <div>
+                        <span class="threat low">
+                            LOW
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <!-- LOW -->
+
+                <div class="table-row" data-level="low">
+
+                    <div>10:12:04</div>
+
+                    <div>192.168.1.11</div>
+
+                    <div>sample.txt</div>
+
+                    <div>File Read</div>
+
+                    <div>16</div>
+
+                    <div>
+                        <span class="threat low">
+                            LOW
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             SECURITY ANALYTICS
+        ====================================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SECURITY ANALYTICS
+                    </span>
+
+                    <h2>Threat Analytics</h2>
+
+                    <p>
+                        Overview of detected threat activity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="analytics-grid">
+
+
+                <!-- THREAT LEVEL DISTRIBUTION -->
+
+                <div class="chart-card">
+
+                    <h3>Threat Level Distribution</h3>
+
+                    <div class="bar-chart">
+
+
+                        <div class="bar-item">
+
+                            <span>Low</span>
+
+                            <div class="bar-container">
+
+                                <div
+                                    class="bar low-bar"
+                                    style="width: 35%;">
+                                    2
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="bar-item">
+
+                            <span>Medium</span>
+
+                            <div class="bar-container">
+
+                                <div
+                                    class="bar medium-bar"
+                                    style="width: 55%;">
+                                    2
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="bar-item">
+
+                            <span>High</span>
+
+                            <div class="bar-container">
+
+                                <div
+                                    class="bar high-bar"
+                                    style="width: 55%;">
+                                    2
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- THREAT SCORE -->
+
+                <div class="chart-card">
+
+                    <h3>Threat Score Overview</h3>
+
+                    <div class="score-chart">
+
+
+                        <div class="score-column">
+
+                            <div
+                                class="score-bar"
+                                style="height: 92%;">
+                            </div>
+
+                            <span>92</span>
+
+                        </div>
+
+
+                        <div class="score-column">
+
+                            <div
+                                class="score-bar"
+                                style="height: 84%;">
+                            </div>
+
+                            <span>84</span>
+
+                        </div>
+
+
+                        <div class="score-column">
+
+                            <div
+                                class="score-bar"
+                                style="height: 67%;">
+                            </div>
+
+                            <span>67</span>
+
+                        </div>
+
+
+                        <div class="score-column">
+
+                            <div
+                                class="score-bar"
+                                style="height: 54%;">
+                            </div>
+
+                            <span>54</span>
+
+                        </div>
+
+
+                        <div class="score-column">
+
+                            <div
+                                class="score-bar"
+                                style="height: 28%;">
+                            </div>
+
+                            <span>28</span>
+
+                        </div>
+
+
+                        <div class="score-column">
+
+                            <div
+                                class="score-bar"
+                                style="height: 16%;">
+                            </div>
+
+                            <span>16</span>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <p>
+            <strong>
+                Honeypot-Based Ransomware Early Warning System
+            </strong>
+        </p>
+
+        <p>
+            B.Sc. Computer Science • Academic Year 2026–2027
+        </p>
+
+    </footer>
+
+
+    <script src="javascript.js"></script>
+    <script src="logout.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation</title>   
+   <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body >
+    <header>
+
+         <div class="logo" style="margin-right:700px;">HONEYSHIELD</div>
+          <nav class="top-nav">
+      <a class="nav-link" href="Home.html" style="margin-left:700px;">Back to Home</a>
+</a>
+        
+    </nav><br><hr>
+         <h1>DOCUMENTATION</h1>
+    </header>
+<hr>
+  <!-- Menu Button -->
+  <button id="menu-btn" class="menu-btn" aria-label="Toggle menu">☰</button>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#technology">Technology</a></li>
+      <li><a href="#outcomes">Outcomes</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="content">
+   
+
+    <main>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          
+          
+          <h1>HONEYSHIELD:Early Warning System</h1>
+          
+          <p>
+            A proactive cybersecurity framework that combines honeypots, honey file monitoring,
+            behavioural analysis, machine learning and real-time security visualisation to identify
+            suspicious ransomware activity before large-scale file encryption occurs.
+          </p>
+          
+          <div class="hero-buttons">
+            <a href="#architecture" class="btn btn-primary">Explore System</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Overview -->
+      <section id="overview" class="section">
+        <div class="container">
+          <div class="section-title">
+            <h2>PROJECT OVERVIEW</h2>
+            <p>
+              The proposed system combines honeypot technology, file monitoring, machine learning
+              and virtualisation to provide an early warning mechanism for ransomware.
+            </p>
+          </div>
+
+          <div class="grid grid-4">
+            <div class="card">
+              <div class="icon">🛡️</div>
+              <h3>Early Detection</h3>
+              <p>Detects suspicious activities before ransomware can cause large-scale encryption of genuine files.</p>
+            </div>
+            <div class="card">
+              <div class="icon">🍯</div>
+              <h3>Honeypot Technology</h3>
+              <p>Cowrie imitates a vulnerable SSH server and records attacker interactions for analysis.</p>
+            </div>
+            <div class="card">
+              <div class="icon">📄</div>
+              <h3>Honey Files</h3>
+              <p>Decoy files are monitored for suspicious access, modification, deletion and renaming activities.</p>
+            </div>
+            <div class="card">
+              <div class="icon">🤖</div>
+              <h3>Machine Learning</h3>
+              <p>Isolation Forest analyses behavioural patterns and identifies anomalous activities.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Architecture -->
+       <section class="documentation-section" id="architecture">
+
+    <div class="documentation-section-header">
+    
+        <h2>SYSTEM ARCHITECTURE</h2>
+        <p>
+            The system operates inside an isolated virtual laboratory
+            consisting of Ubuntu Server and Kali Linux.
+        </p>
+    </div>
+
+    <div class="documentation-architecture">
+
+        <div class="architecture-box">
+            <strong>Kali Linux</strong>
+            <span>Controlled Attack Simulation</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Cowrie Honeypot</strong>
+            <span>Captures SSH attacker interactions</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Honey Files + Python Watchdog</strong>
+            <span>Detects suspicious file activities</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>JSON + CSV Logs</strong>
+            <span>Security event collection</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Pandas</strong>
+            <span>Data cleaning, transformation and merging</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Isolation Forest</strong>
+            <span>Behavioural anomaly detection</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Threat Classification</strong>
+            <span>Low • Medium • High</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Streamlit Dashboard</strong>
+            <span>Security statistics, alerts and threat levels</span>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-box">
+            <strong>Email Notification</strong>
+            <span>High-risk alert to administrator</span>
+        </div>
+
+    </div>
+
+</section>
+      
+               
+           
+           
+
+      <!-- Technology -->
+    
+<section id="technology" class="documentation-section">
+
+    <div class="documentation-section-header">
+        
+        <h2>TECHNOLOGIES </h2>
+        <p>
+            Technologies and tools used to develop, monitor and analyse
+            the honeypot-based ransomware early warning system.
+        </p>
+    </div>
+
+    <div class="documentation-grid">
+
+        <div class="documentation-card">
+            <h3>Python</h3>
+            <p>
+                Used for monitoring scripts, data processing, machine
+                learning, alerts and dashboard integration.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>VirtualBox</h3>
+            <p>
+                Provides the isolated virtual laboratory for safe
+                attack simulation.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Ubuntu Server</h3>
+            <p>
+                Acts as the target machine hosting the honeypot
+                and honey files.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Kali Linux</h3>
+            <p>
+                Used as the controlled attacker environment
+                for security testing.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Cowrie</h3>
+            <p>
+                Captures attacker SSH interactions and generates
+                detailed security logs.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Python Watchdog</h3>
+            <p>
+                Continuously monitors honey files for suspicious
+                file operations.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Pandas</h3>
+            <p>
+                Cleans, transforms and merges the collected
+                security data.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Scikit-learn</h3>
+            <p>
+                Provides the Isolation Forest machine learning
+                algorithm for anomaly detection.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Streamlit</h3>
+            <p>
+                Provides the web-based dashboard for displaying
+                security information.
+            </p>
+        </div>
+
+        <div class="documentation-card">
+            <h3>Python SMTP</h3>
+            <p>
+                Sends automated email notifications when
+                high-risk behaviour is detected.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Project Outcomes -->
+<section class="documentation-section" id="outcomes">
+
+    <div class="documentation-section-header">
+        
+
+        <h2>PROJECT OUTCOMES</h2>
+
+        <p>
+            The project provides an early-warning security system for
+            detecting suspicious ransomware-related behaviour.
+        </p>
+    </div>
+
+    <div class="documentation-list">
+
+        <ul>
+            <li>Early detection of suspicious ransomware behaviour.</li>
+
+            <li>
+                Behaviour-based threat detection using Isolation Forest.
+            </li>
+
+            <li>
+                Real-time monitoring through Watchdog and Cowrie.
+            </li>
+
+            <li>
+                Security information presented through a Streamlit dashboard.
+            </li>
+
+            <li>
+                Reduced risk of large-scale data loss through early warning.
+            </li>
+
+            <li>
+                Practical demonstration of machine learning in cybersecurity.
+            </li>
+
+            <li>
+                Cost-effective implementation using free and open-source
+                technologies.
+            </li>
+
+            <li>
+                Automatic email notifications for high-risk behaviour.
+            </li>
+        </ul>
+
+    </div>
+
+</section>
+           
+
+   
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p><strong>Honeypot-Based Ransomware Early Warning System</strong></p>
+      <p>B.Sc. Computer Science • Academic Year 2026–2027</p>
+    </footer>
+  </div>
+
+  <script>
+    const menuBtn = document.getElementById("menu-btn");
+    const sidebar = document.getElementById("sidebar");
+    const content = document.querySelector(".content");
+
+    menuBtn.addEventListener("click", () => {
+      if (window.innerWidth <= 1024) {
+        sidebar.classList.toggle("open");
+      } else {
+        sidebar.classList.toggle("closed");
+        content.classList.toggle("full");
+      }
+    });
+
+    // Close mobile sidebar on link click
+    sidebar.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        if (window.innerWidth <= 1024) {
+          sidebar.classList.remove("open");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

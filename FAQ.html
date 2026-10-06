@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="style.css">
+
+    <title>FAQ </title>
+</head>
+
+<body>
+
+
+<!-- NAVIGATION -->
+
+<header>
+         <div class="logo" style="margin-right:700px;">HONEYSHIELD</div>
+    <nav>
+
+
+        <a href="Home.html" style="margin-left: 700px;">
+             Back to Home
+        </a>
+
+    </nav>
+     <hr><br><h1>
+        Frequently Asked
+        <span>Questions</span>
+    </h1>
+<hr><br>
+</header>
+<br><br>
+
+<!-- HERO -->
+
+
+    <h2><pre>
+        Learn about the purpose, architecture, technologies,
+        detection process and implementation of the
+        Honeypot-Based Ransomware Early Warning System.
+    </pre>
+</h2>
+
+
+
+<!-- FAQ -->
+
+<main class="faq-section">
+
+
+    <!-- GENERAL -->
+
+    <div class="category">
+        <h3>General</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            What is this project?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The project is a Honeypot-Based Ransomware Early
+                Warning System that combines honeypot technology,
+                honey file monitoring, machine learning and
+                virtualisation to detect suspicious ransomware
+                behaviour at an early stage.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What is the main purpose of the system?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The primary goal is to identify malicious behaviour
+                before ransomware encrypts genuine user files.
+                The system monitors attacker activity and suspicious
+                file operations and analyses them using machine
+                learning.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Why is early ransomware detection important?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Ransomware can encrypt valuable files and cause
+                financial losses, operational disruption and data
+                loss. Detecting suspicious behaviour early can provide
+                administrators with an opportunity to respond before
+                large-scale encryption occurs.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- HONEYPOT -->
+
+    <div class="category">
+        <h3>Honeypot & Honey Files</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            What is a honeypot?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                A honeypot is a decoy system or service designed
+                to attract attackers and record their activities.
+                In this project, Cowrie is used as the SSH honeypot.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What is Cowrie used for?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Cowrie is used as a medium-interaction SSH honeypot.
+                It records login attempts, usernames, passwords,
+                executed commands, session information and attacker
+                IP addresses.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What are honey files?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Honey files are fake but realistic-looking files
+                placed inside a monitored directory. They are
+                designed to attract attackers or malware without
+                containing genuine sensitive information.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What happens when a honey file is modified?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Python Watchdog detects the file activity and records
+                information such as the timestamp, file name and
+                type of operation in the monitoring log.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- MACHINE LEARNING -->
+
+    <div class="category">
+        <h3>Machine Learning</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            Why is machine learning used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Machine learning allows the system to analyse
+                behavioural patterns rather than depending only on
+                predefined malware signatures. This supports the
+                identification of unusual activities.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Which machine learning algorithm is used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The project uses the Isolation Forest algorithm
+                provided by Scikit-learn for unsupervised anomaly
+                detection.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Why was Isolation Forest selected?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Isolation Forest is suitable for anomaly detection
+                and does not require a large labelled training
+                dataset. It identifies observations that differ
+                significantly from normal behavioural patterns.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What kind of behaviour is analysed?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The system can analyse indicators such as frequent
+                failed SSH authentication attempts, suspicious
+                command execution and honey file activities.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- SYSTEM -->
+
+    <div class="category">
+        <h3>System Architecture</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            Which operating systems are used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Ubuntu Server functions as the target environment,
+                while Kali Linux is used for controlled attack
+                simulation.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Why is VirtualBox used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                VirtualBox provides a virtualised laboratory where
+                the system can be developed and tested in an isolated
+                environment.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Why is a Host-Only network used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The Host-Only network keeps communication between
+                the virtual machines isolated from the external
+                network, providing a controlled environment for
+                attack simulation.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Which machine is the attacker?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Kali Linux is used as the controlled attacker
+                environment for simulating cybersecurity activities.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Which machine hosts the detection system?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Ubuntu Server hosts the Cowrie honeypot, honey files,
+                monitoring components, data processing, machine
+                learning and dashboard components.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- DATA -->
+
+    <div class="category">
+        <h3>Data Processing</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            What type of logs are generated?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Cowrie produces JSON-based security logs, while
+                Python Watchdog records honey file events in CSV
+                format.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Why is Pandas used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Pandas is used to clean, transform and combine the
+                collected security data before it is passed to the
+                machine learning component.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What happens to the processed data?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Behavioural features are extracted from the processed
+                logs and supplied to the Isolation Forest model for
+                anomaly analysis.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- DASHBOARD -->
+
+    <div class="category">
+        <h3>Dashboard & Alerts</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            What is Streamlit used for?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Streamlit is used to build the web-based security
+                dashboard that presents attack statistics, file
+                events, attacker information, anomaly scores and
+                threat levels.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What information is displayed on the dashboard?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The dashboard can display total attacks detected,
+                active attacker sessions, attacker IP addresses,
+                failed login attempts, honey file events, threat
+                severity, anomaly scores and attack timestamps.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What are the threat levels?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The system classifies detected activities into
+                Low Threat, Medium Threat and High Threat categories.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            How are email alerts generated?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Python's SMTP library is used to send an automated
+                email notification when the machine learning analysis
+                identifies activity exceeding the predefined
+                high-risk threshold.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- SECURITY -->
+
+    <div class="category">
+        <h3>Security & Scope</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            Does the project use real ransomware?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The project is designed as a controlled virtual
+                laboratory for cybersecurity experimentation.
+                Attack behaviour is simulated within the isolated
+                environment rather than exposing the host system
+                or external networks.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Can the system remove ransomware?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                No. The project focuses on early detection and
+                behavioural analysis rather than complete malware
+                removal.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            What are the main limitations of the project?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                The system is primarily designed for a controlled
+                virtual environment and focuses mainly on SSH-based
+                attack simulation using Cowrie. Large-scale enterprise
+                deployment and cloud integration are outside the
+                current scope.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <!-- FUTURE -->
+
+    <div class="category">
+        <h3>08 — Future Development</h3>
+    </div>
+
+
+    <details class="faq">
+
+        <summary>
+            Can the system be improved in the future?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Yes. The synopsis identifies possible future
+                enhancements including threat intelligence
+                integration, deep learning models and cloud-based
+                deployment.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="faq">
+
+        <summary>
+            Can other machine learning algorithms be used?
+        </summary>
+
+        <div class="faq-answer">
+
+            <p>
+                Future versions may complement or replace Isolation
+                Forest with approaches such as Autoencoders, LSTM
+                networks or Graph Neural Networks.
+            </p>
+
+        </div>
+
+    </details>
+
+
+</main>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <p>
+        <strong>Honeypot-Based Ransomware Early Warning System</strong>
+    </p>
+
+    <p>
+        B.Sc. Computer Science • Academic Year 2026–2027
+    </p>
+
+</footer>
+
+
+</body>
+</html>
