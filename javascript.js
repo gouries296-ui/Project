@@ -189,7 +189,7 @@ function checkLogin() {
 
     if (loggedIn !== "true") {
 
-        window.location.replace("login.html");
+        window.location.replace("Login.html");
 
         return false;
     }
