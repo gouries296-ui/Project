@@ -90,7 +90,7 @@ function registerUser(event) {
 
     /* Go to login */
 
-    window.location.href = "login.html";
+    window.location.href = "Login.html";
 }
 
 
