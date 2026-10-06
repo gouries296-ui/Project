@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             sessionStorage.clear();
 
-            window.location.href = "login.html";
+            window.location.href = "Login.html";
 
         });
 
