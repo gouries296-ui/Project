@@ -1,0 +1,1429 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HoneyShield | Security Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================
+       RESET AND COLOR THEME
+    ========================= */
+
+    :root {
+      color-scheme: dark;
+      --bg: #0A0A0A;
+      --panel: #111111;
+      --panel-light: #171717;
+      --line: #303030;
+      --muted: #999999;
+      --text: #EAEAEA;
+      --green: #C6FF00;
+      --red: #FF625C;
+      --amber: #FFB84D;
+      --soft-green: #A9D900;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Sora", sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    button, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       MAIN LAYOUT
+    ========================= */
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 27px 17px;
+      background: #0D0D0D;
+      border-right: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green);
+      font: 700 15px "JetBrains Mono", monospace;
+      letter-spacing: 1px;
+    }
+
+    .shield {
+      width: 22px;
+      height: 26px;
+      display: inline-block;
+      border: 2px solid var(--green);
+      clip-path: polygon(50% 0, 100% 18%, 91% 70%, 50% 100%, 9% 70%, 0 18%);
+      background: transparent;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font: 9px "JetBrains Mono", monospace;
+      letter-spacing: 1.2px;
+    }
+
+    .nav-toggle {
+      width: 100%;
+      margin-top: 30px;
+      padding: 11px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .nav-toggle span {
+      color: var(--green);
+      margin-right: 10px;
+    }
+
+    .nav {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .nav.open {
+      display: block;
+    }
+
+    .nav button {
+      width: 100%;
+      padding: 12px 10px;
+      margin: 3px 0;
+      background: transparent;
+      color: #A5A5A5;
+      border: 1px solid transparent;
+      text-align: left;
+      transition: .2s;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      color: var(--green);
+      background: #191D0D;
+      border-color: #3B4816;
+    }
+
+    .nav button span {
+      display: inline-block;
+      width: 28px;
+      color: var(--green);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .env {
+      margin-top: auto;
+      padding: 17px 7px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 10px/2 "JetBrains Mono", monospace;
+    }
+
+    .env strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .demo {
+      color: var(--green) !important;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 30px clamp(18px, 4vw, 54px);
+      min-width: 0;
+    }
+
+    /* =========================
+       PAGE HEADER
+    ========================= */
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .eyebrow,
+    .mono {
+      color: var(--muted);
+      font: 10px "JetBrains Mono", monospace;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      color: var(--green);
+    }
+
+    h1 {
+      margin-top: 5px;
+      font: 600 clamp(28px, 3vw, 38px) "JetBrains Mono", monospace;
+      letter-spacing: -1.5px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      max-width: 650px;
+    }
+
+    .live {
+      padding: 8px 12px;
+      border: 1px solid #39451A;
+      color: var(--green);
+      font: 10px "JetBrains Mono", monospace;
+      white-space: nowrap;
+    }
+
+    .pulse {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      50% { opacity: .35; }
+    }
+
+    /* =========================
+       METRIC CARDS
+    ========================= */
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 26px 0;
+    }
+
+    .metric {
+      position: relative;
+      min-height: 112px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .metric::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: var(--accent, var(--green));
+      content: "";
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font: 10px "JetBrains Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .metric .value {
+      margin: 6px 0 2px;
+      font: 600 29px "JetBrains Mono", monospace;
+      letter-spacing: -1px;
+    }
+
+    .metric .note {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* =========================
+       THREAT CHART
+    ========================= */
+
+    .threat-card {
+      margin: 24px 0 10px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .threat-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .threat-head h2 {
+      font: 600 16px "JetBrains Mono", monospace;
+    }
+
+    .threat-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    select {
+      padding: 8px 10px;
+      border: 1px solid #3A3A3A;
+      background: #101010;
+      color: var(--text);
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--green);
+    }
+
+    .threat-chart {
+      min-height: 220px;
+      margin-top: 18px;
+    }
+
+    .threat-chart svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .chart-grid {
+      stroke: #303030;
+      stroke-width: 1;
+    }
+
+    .chart-axis {
+      fill: var(--muted);
+      font: 10px "JetBrains Mono", monospace;
+    }
+
+    .chart-label {
+      fill: var(--text);
+      font: 10px "JetBrains Mono", monospace;
+    }
+
+    .chart-value {
+      fill: var(--green);
+      font: 600 12px "JetBrains Mono", monospace;
+    }
+
+    .chart-bar {
+      transition: opacity .2s;
+    }
+
+    .chart-bar.is-muted {
+      opacity: .22;
+    }
+
+    .threat-foot {
+      margin-top: 12px;
+      color: var(--muted);
+      font: 10px "JetBrains Mono", monospace;
+    }
+
+    /* =========================
+       CONTENT COLUMNS
+    ========================= */
+
+    .columns {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(270px, .9fr);
+      gap: 25px;
+    }
+
+    .sectionhead {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 24px 0 13px;
+    }
+
+    .sectionhead h2 {
+      font: 600 17px "JetBrains Mono", monospace;
+    }
+
+    .filter {
+      margin-bottom: 9px;
+    }
+
+    /* =========================
+       RECENT EVENTS
+    ========================= */
+
+    .events {
+      border-top: 1px solid var(--line);
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 65px 9px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 11px;
+      padding: 14px 10px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      overflow-wrap: anywhere;
+    }
+
+    .event:hover,
+    .event.selected {
+      background: #191D0D;
+    }
+
+    .time {
+      padding-top: 3px;
+      color: var(--muted);
+      font: 10px "JetBrains Mono", monospace;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 50%;
+      background: var(--color);
+    }
+
+    .event-title {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .event-detail {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.7;
+    }
+
+    .badge {
+      padding: 3px 6px;
+      border: 1px solid #55502C;
+      color: var(--amber);
+      font: 9px "JetBrains Mono", monospace;
+      white-space: nowrap;
+    }
+
+    .badge.high {
+      border-color: #67312E;
+      color: var(--red);
+    }
+
+    .badge.low {
+      border-color: #39451A;
+      color: var(--green);
+    }
+
+    .empty {
+      padding: 25px;
+      color: var(--muted);
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* =========================
+       SENSOR STATUS AND ALERTS
+    ========================= */
+
+    .card {
+      margin-bottom: 10px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .statusrow {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .online {
+      color: var(--green);
+      font: 10px "JetBrains Mono", monospace;
+    }
+
+    .statusmeta {
+      margin-top: 7px;
+      color: var(--muted);
+      font: 10px/1.7 "JetBrains Mono", monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .bar {
+      height: 4px;
+      margin-top: 12px;
+      background: #303030;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--green);
+    }
+
+    .alert {
+      padding: 15px;
+      border: 1px solid #494126;
+      background: #17160F;
+    }
+
+    .alertlabel {
+      color: var(--green);
+      font: 10px "JetBrains Mono", monospace;
+      letter-spacing: 1px;
+    }
+
+    .alert h3 {
+      margin: 8px 0 4px;
+      font-size: 13px;
+    }
+
+    .alert p {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .expand {
+      margin-top: 12px;
+      padding: 8px 10px;
+      border: 1px solid #505050;
+      background: transparent;
+      color: var(--text);
+      font-size: 10px;
+    }
+
+    .expand:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .evidence {
+      display: none;
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .evidence.open {
+      display: block;
+    }
+
+    .evidence div {
+      margin: 6px 0;
+    }
+
+    .evidence b {
+      color: var(--text);
+    }
+
+    /* =========================
+       PAGE NAVIGATION
+    ========================= */
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .tablewrap {
+      overflow-x: auto;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+      background: var(--panel);
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      color: var(--muted);
+      font: 10px "JetBrains Mono", monospace;
+      text-transform: uppercase;
+    }
+
+    td {
+      color: #D5D5D5;
+    }
+
+    .note {
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .flow span {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      font-size: 10px;
+    }
+
+    .flow b {
+      color: var(--green);
+      font: 12px "JetBrains Mono", monospace;
+    }
+
+    .history {
+      display: grid;
+      grid-template-columns: 85px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    /* =========================
+       LOGOUT BUTTON
+    ========================= */
+
+    .logout-button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 11px;
+      border: 1px solid var(--green);
+      background: transparent;
+      color: var(--green);
+      font: 600 11px "JetBrains Mono", monospace;
+      letter-spacing: .5px;
+      transition: .2s;
+    }
+
+    .logout-button:hover {
+      background: var(--green);
+      color: #0A0A0A;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: none;
+      max-width: calc(100% - 40px);
+      padding: 12px 16px;
+      border: 1px solid #39451A;
+      background: #171D0D;
+      color: var(--green);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+
+    .foot {
+      margin-top: 27px;
+      padding-top: 13px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 9px/1.8 "JetBrains Mono", monospace;
+      letter-spacing: .4px;
+    }
+
+    /* =========================
+       RESPONSIVE DESIGN
+    ========================= */
+
+    @media (max-width: 1050px) {
+      .shell {
+        grid-template-columns: 210px minmax(0, 1fr);
+      }
+
+      .columns {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: 17px;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .env {
+        display: none;
+      }
+
+      .nav.open {
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        padding: 23px 16px;
+      }
+
+      .metrics {
+        gap: 9px;
+      }
+
+      .threat-card {
+        padding: 13px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      h1 {
+        font-size: 25px;
+      }
+
+      .metric {
+        min-height: 100px;
+        padding: 12px;
+      }
+
+      .metric .value {
+        font-size: 22px;
+      }
+
+      .metric .label {
+        font-size: 9px;
+      }
+
+      .event {
+        grid-template-columns: 53px 8px minmax(0, 1fr);
+        gap: 8px;
+      }
+
+      .event .badge {
+        grid-column: 3;
+        justify-self: start;
+      }
+
+      .history {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .threat-controls {
+        width: 100%;
+      }
+
+      .threat-controls select {
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="shield" aria-hidden="true"></span>
+        <div>
+          HONEYSHIELD
+          <small>EARLY WARNING SYSTEM</small>
+        </div>
+      </div>
+
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mainNav">
+        <span>+</span> Workspace
+      </button>
+
+      <nav class="nav open" id="mainNav" aria-label="Main navigation">
+        <button class="active" data-page="signal">Signal room</button>
+        <button data-page="events">Event explorer</button>
+        <button data-page="sensors">Sensor health</button>
+        <button data-page="email">Email delivery</button>
+      </nav>
+
+      <div class="env">
+        ENVIRONMENT<br>
+        <strong>VirtualBox · Lab network</strong><br><br>
+        DETECTION ENGINE<br>
+        <strong>Isolation Forest · v1.0</strong><br><br>
+        MODE<br>
+        <strong class="demo">DEMO DATA</strong>
+      </div>
+
+      <button type="button" class="logout-button" onclick="logoutUser()">
+        LOG OUT →
+      </button>
+    </aside>
+
+    <main>
+
+      <!-- SIGNAL ROOM -->
+      <section class="page active" id="signal">
+        <header class="top">
+          <div>
+            <div class="eyebrow">DEFENSIVE TELEMETRY / 01</div>
+            <h1>Signal room</h1>
+            <p class="subtitle">A clear signal when suspicious behavior changes.</p>
+          </div>
+          <div class="live"><i class="pulse"></i>SENSORS ONLINE</div>
+        </header>
+
+        <div class="metrics">
+          <div class="metric" style="--accent:var(--green)">
+            <div class="label">Active decoys</div>
+            <div class="value">02 / 02</div>
+            <div class="note">Cowrie · honey files</div>
+          </div>
+
+          <div class="metric">
+            <div class="label">Signals today</div>
+            <div class="value">14</div>
+            <div class="note">Sample monitoring data</div>
+          </div>
+
+          <div class="metric" style="--accent:var(--red)">
+            <div class="label">Needs attention</div>
+            <div class="value">01</div>
+            <div class="note">High confidence anomaly</div>
+          </div>
+
+          <div class="metric" style="--accent:var(--green)">
+            <div class="label">Email delivery</div>
+            <div class="value">1 / 1</div>
+            <div class="note">Latest demo alert marked sent</div>
+          </div>
+        </div>
+
+        <section class="threat-card" aria-labelledby="threatTitle">
+          <div class="threat-head">
+            <div>
+              <h2 id="threatTitle">Threat levels</h2>
+              <div class="note">Signal distribution by sensor</div>
+            </div>
+
+            <div class="threat-controls">
+              <select id="threatSourceFilter" aria-label="Filter graph by sensor">
+                <option value="ALL">All sensors</option>
+                <option value="HONEY FILE">Honey file</option>
+                <option value="COWRIE SSH">Cowrie SSH</option>
+              </select>
+
+              <select id="threatSeverityFilter" aria-label="Highlight threat level">
+                <option value="ALL">All threat levels</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="threat-chart" id="threatChart"></div>
+          <div class="threat-foot" id="threatChartFoot"></div>
+        </section>
+
+        <div class="columns">
+          <section>
+            <div class="sectionhead">
+              <h2>Recent signals</h2>
+              <span class="mono">LATEST FIRST</span>
+            </div>
+
+            <select class="filter" id="severityFilter" aria-label="Filter severity">
+              <option value="ALL">All severities</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+
+            <div class="events" id="recentEvents"></div>
+            <div class="note mono">SAMPLE IP ADDRESSES RESERVED FOR DOCUMENTATION</div>
+          </section>
+
+          <aside>
+            <div class="sectionhead">
+              <h2>Sensor posture</h2>
+              <span class="mono">LAB STATUS</span>
+            </div>
+
+            <div class="card">
+              <div class="statusrow">
+                <span>Cowrie SSH honeypot</span>
+                <span class="online">● LISTENING</span>
+              </div>
+              <div class="statusmeta">Ubuntu Server · port 2222 · sample status</div>
+              <div class="bar"><i style="width:100%"></i></div>
+            </div>
+
+            <div class="card">
+              <div class="statusrow">
+                <span>Honey-file watcher</span>
+                <span class="online">● WATCHING</span>
+              </div>
+              <div class="statusmeta">/srv/honeyfiles · Watchdog · sample status</div>
+              <div class="bar"><i style="width:100%"></i></div>
+            </div>
+
+            <div class="sectionhead">
+              <h2>Latest high signal</h2>
+              <span class="mono">SCORE 0.94</span>
+            </div>
+
+            <div class="alert">
+              <div class="alertlabel">EMAIL ALERT · DEMO</div>
+              <h3>Rapid file activity detected</h3>
+              <p>Illustrative alert with the affected decoy path, event time, anomaly score, and sample source address.</p>
+
+              <button class="expand" id="evidenceButton" type="button">
+                Inspect detection evidence
+              </button>
+
+              <div class="evidence" id="evidence">
+                <div><b>Observed:</b> 18 rename and write events in 4 seconds</div>
+                <div><b>Model:</b> Isolation Forest · anomaly score 0.94</div>
+                <div><b>Interpretation:</b> High-risk behavior on a monitored decoy file</div>
+                <div>An anomaly score is a model signal, not proof of ransomware.</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- EVENT EXPLORER -->
+      <section class="page" id="events">
+        <div class="eyebrow">FORENSIC TRAIL / 02</div>
+        <h1>Event explorer</h1>
+        <p class="subtitle">Review the observable behavior contributing to each signal.</p>
+
+        <select class="filter" id="tableFilter" aria-label="Filter event severity">
+          <option value="ALL">All severities</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Severity</th>
+                <th>Sensor</th>
+                <th>Event</th>
+                <th>Evidence</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody id="eventTable"></tbody>
+          </table>
+        </div>
+
+        <p class="note">Sample records only. Connect your Cowrie JSON and Watchdog logs for live results.</p>
+      </section>
+
+      <!-- SENSOR HEALTH -->
+      <section class="page" id="sensors">
+        <div class="eyebrow">COLLECTION LAYER / 03</div>
+        <h1>Sensor health</h1>
+        <p class="subtitle">Check whether your monitoring components are collecting events.</p>
+
+        <div class="columns" style="margin-top:22px">
+          <div class="card">
+            <div class="statusrow">
+              <span>Cowrie · SSH honeypot</span>
+              <span class="online">● DEMO ONLINE</span>
+            </div>
+            <div class="statusmeta">JSON event stream · Ubuntu Server</div>
+            <div class="bar"><i style="width:92%"></i></div>
+          </div>
+
+          <div class="card">
+            <div class="statusrow">
+              <span>Watchdog · honey-file monitor</span>
+              <span class="online">● DEMO ONLINE</span>
+            </div>
+            <div class="statusmeta">CSV event stream · monitored decoy directory</div>
+            <div class="bar"><i style="width:100%"></i></div>
+          </div>
+        </div>
+
+        <div class="sectionhead">
+          <h2>Detection path</h2>
+          <span class="mono">PROJECT PIPELINE</span>
+        </div>
+
+        <div class="flow">
+          <span>Cowrie / Watchdog</span><b>→</b>
+          <span>Pandas preprocessing</span><b>→</b>
+          <span>Isolation Forest</span><b>→</b>
+          <span>Threat level</span><b>→</b>
+          <span>Dashboard + email</span>
+        </div>
+
+        <p class="note">Sensor indicators are illustrative until connected to live component checks.</p>
+      </section>
+
+      <!-- EMAIL DELIVERY -->
+      <section class="page" id="email">
+        <div class="eyebrow">NOTIFICATION TRACE / 04</div>
+        <h1>Email delivery</h1>
+        <p class="subtitle">Review the notification history for high-risk signals.</p>
+
+        <div class="metric" style="--accent:var(--green);max-width:360px;margin-top:22px">
+          <div class="label">Latest delivery</div>
+          <div class="value">SENT</div>
+          <div class="note">Demo status · no real email was sent</div>
+        </div>
+
+        <div class="sectionhead">
+          <h2>Notification history</h2>
+          <span class="mono">HIGH SEVERITY ONLY</span>
+        </div>
+
+        <div id="emailHistory"></div>
+        <p class="note">Connect an email service to enable real notifications.</p>
+      </section>
+
+      <footer class="foot">
+          <p>
+                    <strong>HoneyShield</strong> 
+                    Honeypot-Based Ransomware Early Warning System
+                </p>
+
+                <p>
+                    B.Sc. Computer Science · Academic Year 2026–2027
+                </p>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    /* =========================
+       LOGOUT FUNCTION
+    ========================= */
+
+    function logoutUser() {
+      const confirmed = confirm("Are you sure you want to log out?");
+
+      if (confirmed) {
+        sessionStorage.removeItem("loggedIn");
+        sessionStorage.removeItem("username");
+        window.location.href = "index.html";
+      }
+    }
+
+    /*
+      Optional dashboard access protection.
+      This checks the session created by your login JavaScript.
+      Remove this block if your login function uses a different
+      session key.
+    */
+    if (sessionStorage.getItem("loggedIn") !== "true") {
+      window.location.replace("Login.html");
+    }
+
+    /* =========================
+       SAMPLE EVENT DATA
+    ========================= */
+
+    const events = [
+      {
+        time: "14:32:10",
+        severity: "HIGH",
+        source: "HONEY FILE",
+        title: "Rapid rename pattern on /srv/share/finance_q4.xlsx",
+        detail: "Watchdog · 18 file events in 4 seconds · score 0.94 · 203.0.113.42",
+        email: "Demo",
+        color: "#FF625C"
+      },
+      {
+        time: "14:27:03",
+        severity: "MEDIUM",
+        source: "COWRIE SSH",
+        title: "Repeated credential attempts against decoy host",
+        detail: "Cowrie · 27 failed logins · session c0w-8e21 · 203.0.113.17",
+        email: "Not sent",
+        color: "#FFB84D"
+      },
+      {
+        time: "14:15:41",
+        severity: "LOW",
+        source: "HONEY FILE",
+        title: "Decoy document opened",
+        detail: "Watchdog · read event · score 0.28 · 203.0.113.88",
+        email: "Not sent",
+        color: "#C6FF00"
+      },
+      {
+        time: "13:58:22",
+        severity: "MEDIUM",
+        source: "COWRIE SSH",
+        title: "Reconnaissance command sequence observed",
+        detail: "Cowrie · 6 commands · session c0w-8d94 · 203.0.113.17",
+        email: "Not sent",
+        color: "#FFB84D"
+      },
+      {
+        time: "13:42:06",
+        severity: "LOW",
+        source: "HONEY FILE",
+        title: "Decoy directory listed",
+        detail: "Watchdog · directory access · score 0.19 · 203.0.113.63",
+        email: "Not sent",
+        color: "#C6FF00"
+      }
+    ];
+
+    const badgeClass = level =>
+      level === "HIGH" ? "high" : level === "LOW" ? "low" : "";
+
+    /* =========================
+       THREAT CHART
+    ========================= */
+
+    function renderThreatChart() {
+      const source = document.getElementById("threatSourceFilter").value;
+      const highlight = document.getElementById("threatSeverityFilter").value;
+
+      const filtered = events.filter(event =>
+        source === "ALL" || event.source === source
+      );
+
+      const levels = [
+        { name: "HIGH", color: "#FF625C" },
+        { name: "MEDIUM", color: "#FFB84D" },
+        { name: "LOW", color: "#C6FF00" }
+      ];
+
+      const counts = levels.map(level =>
+        filtered.filter(event => event.severity === level.name).length
+      );
+
+      const maxValue = Math.max(1, ...counts);
+      const chartWidth = 720;
+      const chartHeight = 250;
+      const left = 48;
+      const right = 22;
+      const top = 18;
+      const bottom = 42;
+      const plotHeight = chartHeight - top - bottom;
+      const plotWidth = chartWidth - left - right;
+      const step = plotWidth / levels.length;
+      const barWidth = Math.min(92, step * .48);
+
+      const ticks = Array.from({ length: maxValue + 1 }, (_, i) => i);
+
+      const grid = ticks.map(tick => {
+        const y = top + plotHeight - (tick / maxValue) * plotHeight;
+
+        return `
+          <g>
+            <line class="chart-grid"
+              x1="${left}" y1="${y}"
+              x2="${chartWidth - right}" y2="${y}"></line>
+            <text class="chart-axis"
+              x="${left - 12}" y="${y + 4}"
+              text-anchor="end">${tick}</text>
+          </g>
+        `;
+      }).join("");
+
+      const bars = levels.map((level, index) => {
+        const x = left + step * index + (step - barWidth) / 2;
+        const height = (counts[index] / maxValue) * plotHeight;
+        const y = top + plotHeight - height;
+
+        const faded =
+          highlight !== "ALL" && highlight !== level.name
+            ? "is-muted"
+            : "";
+
+        return `
+          <g class="chart-bar ${faded}">
+            <rect x="${x}" y="${y}"
+              width="${barWidth}" height="${height}"
+              fill="${level.color}"></rect>
+
+            <text class="chart-value"
+              x="${x + barWidth / 2}"
+              y="${Math.max(top + 13, y - 7)}"
+              text-anchor="middle">${counts[index]}</text>
+
+            <text class="chart-label"
+              x="${x + barWidth / 2}"
+              y="${chartHeight - 13}"
+              text-anchor="middle">${level.name}</text>
+          </g>
+        `;
+      }).join("");
+
+      document.getElementById("threatChart").innerHTML = `
+        <svg viewBox="0 0 ${chartWidth} ${chartHeight}"
+          role="img"
+          aria-label="Bar chart of high, medium and low threat event counts">
+          ${grid}
+          ${bars}
+        </svg>
+      `;
+
+      document.getElementById("threatChartFoot").textContent =
+        `${filtered.length} SIGNAL${filtered.length === 1 ? "" : "S"} · ` +
+        `${source === "ALL" ? "ALL SENSORS" : source} · DEMO DATA`;
+    }
+
+    /* =========================
+       RECENT EVENTS
+    ========================= */
+
+    function renderRecent() {
+      const filter = document.getElementById("severityFilter").value;
+
+      const list = events.filter(event =>
+        filter === "ALL" || event.severity === filter
+      );
+
+      const container = document.getElementById("recentEvents");
+
+      if (list.length === 0) {
+        container.innerHTML =
+          '<div class="empty">No signals match this filter.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(event => `
+        <article class="event"
+          tabindex="0"
+          role="button"
+          style="--color:${event.color}">
+          <div class="time">${event.time}</div>
+          <i class="dot"></i>
+          <div>
+            <div class="event-title">${event.title}</div>
+            <div class="event-detail">${event.source} · ${event.detail}</div>
+          </div>
+          <span class="badge ${badgeClass(event.severity)}">${event.severity}</span>
+        </article>
+      `).join("");
+
+      container.querySelectorAll(".event").forEach((element, index) => {
+        function selectEvent() {
+          container.querySelectorAll(".event").forEach(row =>
+            row.classList.remove("selected")
+          );
+
+          element.classList.add("selected");
+
+          const selected = list[index];
+          const toast = document.getElementById("toast");
+
+          toast.textContent =
+            `Selected ${selected.severity} signal · ${selected.source}`;
+
+          toast.style.display = "block";
+
+          clearTimeout(window.honeyShieldToastTimer);
+
+          window.honeyShieldToastTimer = setTimeout(() => {
+            toast.style.display = "none";
+          }, 2200);
+        }
+
+        element.addEventListener("click", selectEvent);
+
+        element.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectEvent();
+          }
+        });
+      });
+    }
+
+    /* =========================
+       EVENT TABLE
+    ========================= */
+
+    function renderTable() {
+      const filter = document.getElementById("tableFilter").value;
+
+      const list = events.filter(event =>
+        filter === "ALL" || event.severity === filter
+      );
+
+      document.getElementById("eventTable").innerHTML = list.map(event => `
+        <tr>
+          <td class="mono">${event.time}</td>
+          <td><span class="badge ${badgeClass(event.severity)}">${event.severity}</span></td>
+          <td>${event.source}</td>
+          <td>${event.title}</td>
+          <td>${event.detail}</td>
+          <td>${event.email}</td>
+        </tr>
+      `).join("");
+    }
+
+    /* =========================
+       SIDEBAR NAVIGATION
+    ========================= */
+
+    const navToggle = document.getElementById("navToggle");
+    const mainNav = document.getElementById("mainNav");
+
+    navToggle.addEventListener("click", () => {
+      const isOpen = navToggle.getAttribute("aria-expanded") === "true";
+
+      navToggle.setAttribute("aria-expanded", String(!isOpen));
+      mainNav.classList.toggle("open", !isOpen);
+    });
+
+    document.querySelectorAll(".nav button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".nav button").forEach(item =>
+          item.classList.remove("active")
+        );
+
+        document.querySelectorAll(".page").forEach(page =>
+          page.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        document.getElementById(button.dataset.page)
+          .classList.add("active");
+
+        mainNav.classList.remove("open");
+        navToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    /* =========================
+       FILTERS AND EVIDENCE
+    ========================= */
+
+    document.getElementById("severityFilter")
+      .addEventListener("change", renderRecent);
+
+    document.getElementById("threatSourceFilter")
+      .addEventListener("change", renderThreatChart);
+
+    document.getElementById("threatSeverityFilter")
+      .addEventListener("change", renderThreatChart);
+
+    document.getElementById("tableFilter")
+      .addEventListener("change", renderTable);
+
+    document.getElementById("evidenceButton")
+      .addEventListener("click", () => {
+        const panel = document.getElementById("evidence");
+
+        panel.classList.toggle("open");
+
+        document.getElementById("evidenceButton").textContent =
+          panel.classList.contains("open")
+            ? "Hide detection evidence"
+            : "Inspect detection evidence";
+      });
+
+    /* =========================
+       EMAIL HISTORY
+    ========================= */
+
+    document.getElementById("emailHistory").innerHTML = events
+      .filter(event => event.severity === "HIGH")
+      .map(event => `
+        <div class="history">
+          <span class="mono">${event.time}</span>
+          <div>
+            <strong>Administrator alert</strong>
+            <div class="event-detail">
+              ${event.title} · illustrative notification record
+            </div>
+          </div>
+          <span class="badge low">DEMO</span>
+        </div>
+      `).join("");
+
+    /* =========================
+       INITIAL RENDER
+    ========================= */
+
+    renderRecent();
+    renderTable();
+    renderThreatChart();
+  </script>
+</body>
+</html>

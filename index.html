@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta name="description" content="HoneyShield is a ransomware early warning system concept that uses decoy files to help identify suspicious activity early.">
+  <title>HoneyShield — Ransomware Early Warning System</title>
+
+  <!-- Google Fonts: JetBrains Mono for headings and Sora for body copy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN, as requested -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#0A0A0A",
+            lime: "#C6FF00",
+            paper: "#EAEAEA",
+            muted: "#A1A1AA",
+            line: "#292929"
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', "monospace"],
+            sans: ["Sora", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #0A0A0A;
+      --lime: #C6FF00;
+      --off-white: #EAEAEA;
+      --muted: #A1A1AA;
+      --line: #292929;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    body {
+      margin: 0;
+      background: var(--black);
+      color: var(--off-white);
+      font-family: "Sora", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+
+    .font-mono { font-family: "JetBrains Mono", monospace; }
+    .page-shell { width: min(100% - 64px, 1440px); margin-inline: auto; }
+
+    /* Small CSS shield mark: no external icon or image required. */
+    .shield-mark {
+      width: 31px;
+      height: 36px;
+      display: inline-block;
+      flex: 0 0 auto;
+      border: 3px solid var(--lime);
+      border-radius: 48% 48% 46% 46% / 22% 22% 68% 68%;
+      clip-path: polygon(50% 0, 100% 17%, 100% 56%, 87% 76%, 50% 100%, 13% 76%, 0 56%, 0 17%);
+      position: relative;
+    }
+    .shield-mark::after {
+      content: "";
+      position: absolute;
+      width: 3px;
+      height: 17px;
+      background: var(--lime);
+      top: 7px;
+      left: 12px;
+      transform: rotate(42deg);
+      transform-origin: center;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      background: var(--lime);
+      flex: 0 0 auto;
+    }
+    .status-dot.is-live { animation: blink 1.8s steps(2, start) infinite; }
+    @keyframes blink { to { visibility: hidden; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(10, 10, 10, 0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .nav-inner {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font: 600 20px/1 "JetBrains Mono", monospace;
+      letter-spacing: .09em;
+      white-space: nowrap;
+    }
+    .brand .status-dot { margin-left: 1px; }
+    .nav-links { display: flex; align-items: center; gap: clamp(18px, 3vw, 42px); }
+    .nav-link {
+      font-size: 13px;
+      color: #D0D0D0;
+      transition: color .18s ease;
+    }
+    .nav-link:hover { color: var(--lime); }
+    .login-link {
+      border: 1px solid var(--lime);
+      color: var(--lime);
+      padding: 11px 22px;
+      border-radius: 3px;
+      font-size: 13px;
+      transition: background .18s ease, color .18s ease;
+    }
+    .login-link:hover { background: var(--lime); color: var(--black); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+      gap: clamp(42px, 7vw, 112px);
+      align-items: center;
+      padding-top: clamp(76px, 10vw, 144px);
+      padding-bottom: clamp(100px, 13vw, 178px);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      margin: 0 0 28px;
+      color: #C7C7C7;
+      font: 400 12px/1.5 "JetBrains Mono", monospace;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 800px;
+      margin: 0;
+      font: 600 clamp(2.45rem, 5.4vw, 5.3rem)/1.12 "JetBrains Mono", monospace;
+      letter-spacing: -.075em;
+      overflow-wrap: break-word;
+    }
+    .hero-copy {
+      max-width: 620px;
+      margin: 30px 0 0;
+      color: #C7C7C7;
+      font-size: clamp(14px, 1.25vw, 17px);
+      line-height: 1.95;
+    }
+    .hero-copy strong { color: var(--off-white); font-weight: 500; }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 28px;
+      margin-top: 34px;
+    }
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      min-height: 48px;
+      padding: 0 20px;
+      background: var(--lime);
+      color: var(--black);
+      border: 1px solid var(--lime);
+      border-radius: 3px;
+      font: 600 12px/1 "JetBrains Mono", monospace;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .primary-button:hover { background: #D5FF47; transform: translateY(-1px); }
+    .text-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--lime);
+      color: var(--off-white);
+      font: 400 12px/1.4 "JetBrains Mono", monospace;
+    }
+    .text-button:hover { color: var(--lime); }
+    .trust-note {
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .015em;
+      line-height: 1.7;
+    }
+
+    /* Terminal is a static illustration of the intended event flow, not a live feed. */
+    .terminal {
+      width: 100%;
+      border: 1px solid #303030;
+      border-radius: 5px;
+      overflow: hidden;
+      background: #0A0A0A;
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .2);
+    }
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 43px;
+      padding: 0 16px;
+      border-bottom: 1px solid #303030;
+    }
+    .terminal-control { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+    .terminal-body {
+      min-height: 300px;
+      padding: 24px 20px 20px;
+      color: var(--lime);
+      font: 400 11px/2.1 "JetBrains Mono", monospace;
+      overflow-wrap: anywhere;
+    }
+    .terminal-time { color: #9EBE00; }
+    .terminal-event { margin-top: 3px; }
+    .terminal-gap { height: 15px; }
+    .terminal-prompt {
+      margin-top: 52px;
+      padding-top: 13px;
+      border-top: 1px solid #303030;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+    .terminal-note {
+      margin: 12px 0 0;
+      color: #707070;
+      font: 10px/1.7 "JetBrains Mono", monospace;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin: 0 0 54px;
+      font: 400 12px/1.5 "JetBrains Mono", monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .section-heading::after { content: ""; width: 72px; height: 1px; background: var(--line); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+    }
+    .step {
+      position: relative;
+      padding: 29px 32px 0 0;
+      min-height: 245px;
+    }
+    .step + .step { padding-left: 32px; border-left: 1px solid var(--line); }
+    .step-number {
+      margin: 0 0 16px;
+      color: var(--lime);
+      font: 500 clamp(2.5rem, 4.5vw, 3.8rem)/1 "JetBrains Mono", monospace;
+      letter-spacing: -.08em;
+    }
+    .step h3 {
+      margin: 0;
+      color: var(--off-white);
+      font: 500 clamp(1.2rem, 2vw, 1.65rem)/1.35 "JetBrains Mono", monospace;
+    }
+    .step-rule { width: 23px; height: 2px; background: var(--lime); margin: 22px 0 20px; }
+    .step p {
+      max-width: 340px;
+      margin: 0;
+      color: #B7B7B7;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    .step-arrow {
+      position: absolute;
+      top: 48px;
+      right: 24px;
+      color: #DADADA;
+    }
+
+    .site-footer {
+            max-width: 430px;
+            margin: 24px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+            color: #777;
+            font-size: 10px;
+            line-height: 1.9;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+    .footer-brand { gap: 10px; font-size: 12px; letter-spacing: .08em; }
+    .footer-brand .shield-mark { width: 23px; height: 27px; border-width: 2px; }
+    .footer-brand .shield-mark::after { width: 2px; height: 12px; top: 5px; left: 9px; }
+    .footer-meta { color: #929292; font-size: 10px; text-align: right; }
+
+    @media (min-width: 1500px) {
+      .hero { grid-template-columns: minmax(0, 1.55fr) minmax(380px, .95fr); }
+    }
+    @media (max-width: 900px) {
+      .page-shell { width: min(100% - 40px, 720px); }
+      .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 76px; padding-bottom: 105px; }
+      .hero-copy { max-width: 640px; }
+      .terminal { max-width: 620px; }
+      .terminal-body { min-height: 260px; }
+      .steps { grid-template-columns: 1fr; }
+      .step, .step + .step { min-height: auto; padding: 26px 48px 30px 0; border-left: 0; }
+      .step + .step { border-top: 1px solid var(--line); }
+      .step-arrow { top: 46px; right: 8px; }
+      .step p { max-width: 560px; }
+      .site-footer { margin-top: 100px; }
+    }
+    @media (max-width: 560px) {
+      .page-shell { width: min(100% - 32px, 480px); }
+      .nav-inner { min-height: 72px; gap: 12px; }
+      .brand { gap: 9px; font-size: 13px; letter-spacing: .045em; }
+      .shield-mark { width: 25px; height: 30px; border-width: 2px; }
+      .shield-mark::after { width: 2px; height: 14px; top: 6px; left: 10px; }
+      .brand .status-dot { width: 7px; height: 7px; }
+      .nav-links { gap: 12px; }
+      .nav-link { font-size: 10px; }
+      .login-link { padding: 9px 11px; font-size: 10px; }
+      .hero { padding-top: 62px; padding-bottom: 82px; gap: 40px; }
+      .eyebrow { font-size: 9px; letter-spacing: .06em; gap: 8px; margin-bottom: 22px; }
+      h1 { font-size: clamp(2.05rem, 10vw, 3.1rem); letter-spacing: -.075em; }
+      .hero-copy { margin-top: 23px; font-size: 13px; line-height: 1.9; }
+      .hero-actions { align-items: flex-start; flex-direction: column; gap: 12px; margin-top: 26px; }
+      .primary-button { min-height: 46px; }
+      .trust-note { margin-top: 19px; font-size: 10px; }
+      .terminal-body { min-height: 250px; padding: 19px 14px; font-size: 9px; }
+      .terminal-prompt { margin-top: 40px; }
+      .section-heading { margin-bottom: 34px; }
+      .step-number { font-size: 2.8rem; }
+      .step p { font-size: 12px; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .footer-meta { text-align: left; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sticky navigation -->
+  <header class="site-header">
+    <div class="page-shell nav-inner">
+      <a class="brand" href="#home" aria-label="HoneyShield home">
+        <span class="shield-mark" aria-hidden="true"></span>
+        <span>HONEYSHIELD</span>
+        <span class="status-dot" aria-hidden="true"></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Main navigation">
+        <a class="login-link" href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home">
+    <!-- Hero: copy on the left, terminal preview on the right -->
+    <section class="page-shell hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <p class="eyebrow">
+          <span>EARLY WARNING SYSTEM // LIVE</span>
+          <span class="status-dot is-live" aria-hidden="true"></span>
+        </p>
+
+        <h1 id="hero-title">Ransomware doesn't knock. We hear it first.</h1>
+
+        <p class="hero-copy">
+          HoneyShield plants decoy files. When ransomware touches them, you get an email in
+          <strong>less than 3 seconds</strong>. Before your real files are gone.
+        </p>
+
+        <div class="hero-actions">
+          <a class="primary-button" href="register.html">
+            <a href="Login.html" class="primary-button" onclick="startMonitoring(); return false;">
+    <span>Start Monitoring</span>
+    <i data-lucide="arrow-right" width="17" height="17"></i>
+</a>
+            <span>Start Monitoring</span>
+            <i data-lucide="arrow-right" aria-hidden="true" width="17" height="17"></i>
+          </a>
+          <a class="text-button" href="#how-it-works">
+            <span>See How It Works</span>
+            <i data-lucide="arrow-right" aria-hidden="true" width="17" height="17"></i>
+          </a>
+        </div>
+
+        <p class="trust-note">No agent. No slowdown. Used by 42 sysadmins.</p>
+      </div>
+
+      <aside aria-label="Example threat detection terminal">
+        <div class="terminal">
+          <div class="terminal-bar" aria-hidden="true">
+            <span class="terminal-control"></span>
+            <span class="terminal-control"></span>
+            <span class="terminal-control"></span>
+          </div>
+          <div class="terminal-body" role="img" aria-label="Illustrative log showing a decoy file detected, an email alert sent, and an attack isolated">
+            <div class="terminal-time">[2026-06-10 14:23:17]</div>
+            <div class="terminal-event">[DETECTED] decoy_file_01.docx touched</div>
+            <div class="terminal-gap"></div>
+            <div class="terminal-time">[2026-06-10 14:23:17]</div>
+            <div class="terminal-event">-&gt; Email Alert Sent</div>
+            <div class="terminal-gap"></div>
+            <div class="terminal-time">[2026-06-10 14:23:18]</div>
+            <div class="terminal-event">-&gt; Attack Isolated</div>
+            <div class="terminal-prompt" aria-hidden="true">&gt;_</div>
+          </div>
+        </div>
+        <p class="terminal-note">SAMPLE EVENT FLOW // ILLUSTRATIVE UI, NOT A LIVE SYSTEM FEED</p>
+      </aside>
+    </section>
+
+    <!-- Three-step product explanation -->
+    <section class="page-shell" id="how-it-works" aria-labelledby="steps-title">
+      <h2 class="section-heading" id="steps-title">HOW IT WORKS</h2>
+
+      <div class="steps">
+        <article class="step">
+          <h3>Plant</h3>
+          <div class="step-rule" aria-hidden="true"></div>
+          <p>We place decoy files (honeypots) in your system. They look real, but are safe to touch.</p>
+          <i class="step-arrow" data-lucide="arrow-right" aria-hidden="true" width="22" height="22"></i>
+        </article>
+
+        <article class="step">
+          <h3>Detect</h3>
+          <div class="step-rule" aria-hidden="true"></div>
+          <p>If ransomware touches a decoy file, the system can flag the activity for investigation using behavioural signals.</p>
+          <i class="step-arrow" data-lucide="arrow-right" aria-hidden="true" width="22" height="22"></i>
+        </article>
+
+        <article class="step">
+          <h3>Alert</h3>
+          <div class="step-rule" aria-hidden="true"></div>
+          <p>Receive an alert so you can investigate and respond before your real files are affected.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Compact footer -->
+  <footer class="page-shell site-footer">
+     <p><center>
+                    <strong>HoneyShield</strong> 
+                   <small> Honeypot-Based Ransomware Early Warning System
+                </p>
+
+                <p>
+                    B.Sc. Computer Science · Academic Year 2026–2027</small>
+                </p><center>
+
+  </footer>
+
+  <script>
+    // Render Lucide's inline SVG icons. The shield logo is custom CSS.
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+   
+  </script>
+</body>
+</html>
