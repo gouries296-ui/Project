@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0A0A0A">
   <meta name="description" content="HoneyShield is a ransomware early warning system concept that uses decoy files to help identify suspicious activity early.">
   <title>HoneyShield — Ransomware Early Warning System</title>
-
-  <!-- Google Fonts: JetBrains Mono for headings and Sora for body copy -->
+  <!-- Google Fonts: JetBrains Mono for headings and Sora for body copy !-->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CDN, as requested -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+   <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -55,6 +52,13 @@
       color: var(--off-white);
       font-family: "Sora", sans-serif;
       -webkit-font-smoothing: antialiased;
+      background-image:
+        linear-gradient(rgba(7,20,38,.48), rgba(7,20,38,.72)),
+        url("honeyshield.jpeg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
     }
     a { color: inherit; text-decoration: none; }
     button, a { -webkit-tap-highlight-color: transparent; }
@@ -408,7 +412,7 @@
             <a href="Login.html" class="primary-button" onclick="startMonitoring(); return false;">
     <span>Start Monitoring</span>
     <i data-lucide="arrow-right" width="17" height="17"></i>
-            </a>
+</a>
           <a class="text-button" href="#how-it-works">
             <span>See How It Works</span>
             <i data-lucide="arrow-right" aria-hidden="true" width="17" height="17"></i>
@@ -437,7 +441,6 @@
             <div class="terminal-prompt" aria-hidden="true">&gt;_</div>
           </div>
         </div>
-        <p class="terminal-note">SAMPLE EVENT FLOW // ILLUSTRATIVE UI, NOT A LIVE SYSTEM FEED</p>
       </aside>
     </section>
 
