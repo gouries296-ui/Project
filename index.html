@@ -1,496 +1,1544 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0A0A0A">
-  <meta name="description" content="HoneyShield is a ransomware early warning system concept that uses decoy files to help identify suspicious activity early.">
-  <title>HoneyShield — Ransomware Early Warning System</title>
-  <!-- Google Fonts: JetBrains Mono for headings and Sora for body copy !-->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            ink: "#0A0A0A",
-            lime: "#C6FF00",
-            paper: "#EAEAEA",
-            muted: "#A1A1AA",
-            line: "#292929"
-          },
-          fontFamily: {
-            mono: ['"JetBrains Mono"', "monospace"],
-            sans: ["Sora", "sans-serif"]
-          }
-        }
-      }
-    };
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0705">
+<title>HoneyShield | Early Warning</title>
 
-  <!-- Lucide icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      color-scheme: dark;
-      --black: #0A0A0A;
-      --lime: #C6FF00;
-      --off-white: #EAEAEA;
-      --muted: #A1A1AA;
-      --line: #292929;
-    }
+<style>
+:root {
+  --bg: #0B0705;
+  --ember: #FF6A1A;
+  --amber: #FFB067;
+  --green: #9BCE82;
+  --red: #FF715B;
+  --yellow: #F2B84B;
+  --text: #fff;
+  --muted: rgba(255,255,255,.6);
+  --line: rgba(255,140,60,.16);
+  --glow: rgba(255,106,26,.45);
+  --radius: 24px;
+  --card: linear-gradient(160deg, rgba(28,16,10,.9), rgba(14,8,5,.9));
+}
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
-    body {
-      margin: 0;
-      background: var(--black);
-      color: var(--off-white);
-      font-family: "Sora", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      background-image:
-        linear-gradient(rgba(7,20,38,.48), rgba(7,20,38,.72)),
+* { box-sizing: border-box; margin: 0; }
+
+html { color-scheme: dark; }
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+   linear-gradient(
+            rgba(11, 7, 5, 0.75),
+            rgba(11, 7, 5, 0.85)
+        ),
         url("honeyshield.jpeg");
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-    a { color: inherit; text-decoration: none; }
-    button, a { -webkit-tap-highlight-color: transparent; }
-    :focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
 
-    .font-mono { font-family: "JetBrains Mono", monospace; }
-    .page-shell { width: min(100% - 64px, 1440px); margin-inline: auto; }
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+   
+}
 
-    /* Small CSS shield mark: no external icon or image required. */
-    .shield-mark {
-      width: 31px;
-      height: 36px;
-      display: inline-block;
-      flex: 0 0 auto;
-      border: 3px solid var(--lime);
-      border-radius: 48% 48% 46% 46% / 22% 22% 68% 68%;
-      clip-path: polygon(50% 0, 100% 17%, 100% 56%, 87% 76%, 50% 100%, 13% 76%, 0 56%, 0 17%);
-      position: relative;
-    }
-    .shield-mark::after {
-      content: "";
-      position: absolute;
-      width: 3px;
-      height: 17px;
-      background: var(--lime);
-      top: 7px;
-      left: 12px;
-      transform: rotate(42deg);
-      transform-origin: center;
-    }
+button, select {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
 
-    .status-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      display: inline-block;
-      background: var(--lime);
-      flex: 0 0 auto;
-    }
-    .status-dot.is-live { animation: blink 1.8s steps(2, start) infinite; }
-    @keyframes blink { to { visibility: hidden; } }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
 
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(10, 10, 10, 0.96);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-    }
-    .nav-inner {
-      min-height: 82px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 28px;
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 14px;
-      font: 600 20px/1 "JetBrains Mono", monospace;
-      letter-spacing: .09em;
-      white-space: nowrap;
-    }
-    .brand .status-dot { margin-left: 1px; }
-    .nav-links { display: flex; align-items: center; gap: clamp(18px, 3vw, 42px); }
-    .nav-link {
-      font-size: 13px;
-      color: #D0D0D0;
-      transition: color .18s ease;
-    }
-    .nav-link:hover { color: var(--lime); }
-    .login-link {
-      border: 1px solid var(--lime);
-      color: var(--lime);
-      padding: 11px 22px;
-      border-radius: 3px;
-      font-size: 13px;
-      transition: background .18s ease, color .18s ease;
-    }
-    .login-link:hover { background: var(--lime); color: var(--black); }
+/* Layout */
 
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
-      gap: clamp(42px, 7vw, 112px);
-      align-items: center;
-      padding-top: clamp(76px, 10vw, 144px);
-      padding-bottom: clamp(100px, 13vw, 178px);
-    }
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      margin: 0 0 28px;
-      color: #C7C7C7;
-      font: 400 12px/1.5 "JetBrains Mono", monospace;
-      letter-spacing: .11em;
-      text-transform: uppercase;
-    }
-    h1 {
-      max-width: 800px;
-      margin: 0;
-      font: 600 clamp(2.45rem, 5.4vw, 5.3rem)/1.12 "JetBrains Mono", monospace;
-      letter-spacing: -.075em;
-      overflow-wrap: break-word;
-    }
-    .hero-copy {
-      max-width: 620px;
-      margin: 30px 0 0;
-      color: #C7C7C7;
-      font-size: clamp(14px, 1.25vw, 17px);
-      line-height: 1.95;
-    }
-    .hero-copy strong { color: var(--off-white); font-weight: 500; }
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 28px;
-      margin-top: 34px;
-    }
-    .primary-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      min-height: 48px;
-      padding: 0 20px;
-      background: var(--lime);
-      color: var(--black);
-      border: 1px solid var(--lime);
-      border-radius: 3px;
-      font: 600 12px/1 "JetBrains Mono", monospace;
-      transition: background .18s ease, transform .18s ease;
-    }
-    .primary-button:hover { background: #D5FF47; transform: translateY(-1px); }
-    .text-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 13px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--lime);
-      color: var(--off-white);
-      font: 400 12px/1.4 "JetBrains Mono", monospace;
-    }
-    .text-button:hover { color: var(--lime); }
-    .trust-note {
-      margin: 24px 0 0;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: .015em;
-      line-height: 1.7;
-    }
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
 
-    /* Terminal is a static illustration of the intended event flow, not a live feed. */
-    .terminal {
-      width: 100%;
-      border: 1px solid #303030;
-      border-radius: 5px;
-      overflow: hidden;
-      background: #0A0A0A;
-      box-shadow: 0 18px 55px rgba(0, 0, 0, .2);
-    }
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 43px;
-      padding: 0 16px;
-      border-bottom: 1px solid #303030;
-    }
-    .terminal-control { width: 8px; height: 8px; border-radius: 50%; background: #555; }
-    .terminal-body {
-      min-height: 300px;
-      padding: 24px 20px 20px;
-      color: var(--lime);
-      font: 400 11px/2.1 "JetBrains Mono", monospace;
-      overflow-wrap: anywhere;
-    }
-    .terminal-time { color: #9EBE00; }
-    .terminal-event { margin-top: 3px; }
-    .terminal-gap { height: 15px; }
-    .terminal-prompt {
-      margin-top: 52px;
-      padding-top: 13px;
-      border-top: 1px solid #303030;
-      font-size: 18px;
-      line-height: 1.3;
-    }
-    .terminal-note {
-      margin: 12px 0 0;
-      color: #707070;
-      font: 10px/1.7 "JetBrains Mono", monospace;
-    }
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: rgba(14,8,5,.82);
+  backdrop-filter: blur(14px);
+  border-right: 1px solid var(--line);
+}
 
-    .section-heading {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      margin: 0 0 54px;
-      font: 400 12px/1.5 "JetBrains Mono", monospace;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-    .section-heading::after { content: ""; width: 72px; height: 1px; background: var(--line); }
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border-top: 1px solid var(--line);
-    }
-    .step {
-      position: relative;
-      padding: 29px 32px 0 0;
-      min-height: 245px;
-    }
-    .step + .step { padding-left: 32px; border-left: 1px solid var(--line); }
-    .step-number {
-      margin: 0 0 16px;
-      color: var(--lime);
-      font: 500 clamp(2.5rem, 4.5vw, 3.8rem)/1 "JetBrains Mono", monospace;
-      letter-spacing: -.08em;
-    }
-    .step h3 {
-      margin: 0;
-      color: var(--off-white);
-      font: 500 clamp(1.2rem, 2vw, 1.65rem)/1.35 "JetBrains Mono", monospace;
-    }
-    .step-rule { width: 23px; height: 2px; background: var(--lime); margin: 22px 0 20px; }
-    .step p {
-      max-width: 340px;
-      margin: 0;
-      color: #B7B7B7;
-      font-size: 13px;
-      line-height: 1.9;
-    }
-    .step-arrow {
-      position: absolute;
-      top: 48px;
-      right: 24px;
-      color: #DADADA;
-    }
+main {
+  padding: 36px clamp(20px, 4vw, 48px);
+  min-width: 0;
+}
 
-    .site-footer {
-            max-width: 430px;
-            margin: 24px auto 0;
-            padding-top: 20px;
-            border-top: 1px solid var(--line);
-            color: #777;
-            font-size: 10px;
-            line-height: 1.9;
-    }
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
-    }
-    .footer-brand { gap: 10px; font-size: 12px; letter-spacing: .08em; }
-    .footer-brand .shield-mark { width: 23px; height: 27px; border-width: 2px; }
-    .footer-brand .shield-mark::after { width: 2px; height: 12px; top: 5px; left: 9px; }
-    .footer-meta { color: #929292; font-size: 10px; text-align: right; }
+.page { display: none; }
 
-    @media (min-width: 1500px) {
-      .hero { grid-template-columns: minmax(0, 1.55fr) minmax(380px, .95fr); }
-    }
-    @media (max-width: 900px) {
-      .page-shell { width: min(100% - 40px, 720px); }
-      .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 76px; padding-bottom: 105px; }
-      .hero-copy { max-width: 640px; }
-      .terminal { max-width: 620px; }
-      .terminal-body { min-height: 260px; }
-      .steps { grid-template-columns: 1fr; }
-      .step, .step + .step { min-height: auto; padding: 26px 48px 30px 0; border-left: 0; }
-      .step + .step { border-top: 1px solid var(--line); }
-      .step-arrow { top: 46px; right: 8px; }
-      .step p { max-width: 560px; }
-      .site-footer { margin-top: 100px; }
-    }
-    @media (max-width: 560px) {
-      .page-shell { width: min(100% - 32px, 480px); }
-      .nav-inner { min-height: 72px; gap: 12px; }
-      .brand { gap: 9px; font-size: 13px; letter-spacing: .045em; }
-      .shield-mark { width: 25px; height: 30px; border-width: 2px; }
-      .shield-mark::after { width: 2px; height: 14px; top: 6px; left: 10px; }
-      .brand .status-dot { width: 7px; height: 7px; }
-      .nav-links { gap: 12px; }
-      .nav-link { font-size: 10px; }
-      .login-link { padding: 9px 11px; font-size: 10px; }
-      .hero { padding-top: 62px; padding-bottom: 82px; gap: 40px; }
-      .eyebrow { font-size: 9px; letter-spacing: .06em; gap: 8px; margin-bottom: 22px; }
-      h1 { font-size: clamp(2.05rem, 10vw, 3.1rem); letter-spacing: -.075em; }
-      .hero-copy { margin-top: 23px; font-size: 13px; line-height: 1.9; }
-      .hero-actions { align-items: flex-start; flex-direction: column; gap: 12px; margin-top: 26px; }
-      .primary-button { min-height: 46px; }
-      .trust-note { margin-top: 19px; font-size: 10px; }
-      .terminal-body { min-height: 250px; padding: 19px 14px; font-size: 9px; }
-      .terminal-prompt { margin-top: 40px; }
-      .section-heading { margin-bottom: 34px; }
-      .step-number { font-size: 2.8rem; }
-      .step p { font-size: 12px; }
-      .footer-inner { align-items: flex-start; flex-direction: column; }
-      .footer-meta { text-align: left; }
-    }
-  </style>
+.page.active { display: block; }
+
+.page > * + * { margin-top: 20px; }
+
+/* Typography */
+
+h1 {
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 500;
+  letter-spacing: -.03em;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -.02em;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.note, .statusmeta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Sidebar */
+
+.brand {
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+
+.brand small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+
+.nav-toggle { display: none; }
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav button, .nav-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: none;
+  color: rgba(255,255,255,.7);
+  text-align: left;
+  transition: all .2s;
+}
+
+.nav button:hover,
+.nav button.active,
+.nav-toggle:hover {
+  background: rgba(255,106,26,.12);
+  border-color: rgba(255,140,60,.45);
+  color: var(--amber);
+  box-shadow: 0 0 18px rgba(255,106,26,.18);
+}
+
+.env {
+  margin-top: auto;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.env strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.env .demo { color: var(--amber); }
+
+/* Header and buttons */
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255,140,60,.35);
+  border-radius: 999px;
+  background: rgba(255,106,26,.08);
+  color: var(--amber);
+  font-size: 13px;
+}
+
+.pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 12px var(--ember);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: .4; }
+}
+
+.logout-button {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  z-index: 20;
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 24px;
+  color: #fff;
+  font-weight: 500;
+  background: linear-gradient(180deg, #FF8A3D, #E8500A);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 22px var(--glow);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.logout-button:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 32px rgba(255,106,26,.65);
+}
+
+.expand {
+  margin-top: 14px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: none;
+  border: 1px solid rgba(255,140,60,.45);
+  color: var(--amber);
+  transition: background .2s;
+}
+
+.expand:hover {
+  background: rgba(255,106,26,.14);
+}
+
+/* Cards */
+
+.metric, .threat-card, .card, .alert, .email-stat, .tablewrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.metric, .card, .email-stat {
+  padding: 20px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.metric:hover, .card:hover, .email-stat:hover {
+  border-color: rgba(255,140,60,.5);
+  box-shadow: 0 0 28px rgba(255,106,26,.18);
+}
+
+.metrics, .email-summary, .sensor-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.sensor-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.metric {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--accent, var(--ember));
+  box-shadow: 0 0 18px var(--accent, var(--ember));
+}
+
+.label, .email-stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.value, .email-stat strong {
+  display: block;
+  margin: 6px 0 2px;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.card + .card { margin-top: 12px; }
+
+.statusrow, .sensor-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.statusrow { font-weight: 500; }
+
+.statusmeta { margin: 6px 0 12px; }
+
+.sensor-meta {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sensor-meta span:last-child { color: var(--text); }
+
+.sensor-icon {
+  margin-right: 8px;
+  color: var(--amber);
+}
+
+.bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #C2410C, #FF8A3D);
+}
+
+/* Threat chart */
+
+.threat-card { padding: 24px; }
+
+.threat-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.threat-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 32px;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.chart-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+
+.chart-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .4s, opacity .2s;
+}
+
+.chart-fill.muted { opacity: .25; }
+
+.chart-count { text-align: right; }
+
+.threat-foot {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Two-column area */
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 28px;
+}
+
+.sectionhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  flex-wrap: wrap;
+}
+
+aside .sectionhead:not(:first-child) { margin-top: 28px; }
+
+.mono {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.filter, .threat-controls select {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(20,12,8,.9);
+}
+
+.filter { margin-bottom: 12px; }
+
+/* Events */
+
+.events {
+  border-top: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+.event {
+  display: grid;
+  grid-template-columns: 70px 12px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.event:hover, .event.selected {
+  background: rgba(255,106,26,.08);
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color);
+  box-shadow: 0 0 10px var(--color);
+}
+
+.event-title { font-weight: 500; }
+
+.event-detail {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Badges */
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(255,140,60,.4);
+  color: var(--amber);
+}
+
+.badge.high, .badge.failed {
+  border-color: rgba(255,90,60,.5);
+  color: #FF8A70;
+}
+
+.badge.medium, .badge.sending, .badge.queued {
+  border-color: rgba(255,176,103,.5);
+  color: var(--amber);
+}
+
+.badge.low, .badge.sent, .badge.online {
+  border-color: rgba(155,206,130,.5);
+  color: var(--green);
+}
+
+/* Alert */
+
+.alert {
+  padding: 22px;
+  border-color: rgba(255,140,60,.6);
+  box-shadow: 0 0 34px rgba(255,106,26,.28), inset 0 0 40px rgba(255,106,26,.06);
+}
+
+.alertlabel {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--amber);
+}
+
+.alert p {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.evidence {
+  display: none;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.evidence.open { display: block; }
+
+.evidence div:last-child {
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+/* Tables */
+
+.tablewrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+th {
+  color: var(--amber);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+td { color: rgba(255,255,255,.85); }
+
+tbody tr:hover { background: rgba(255,106,26,.06); }
+
+.email-detail {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Pipeline */
+
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.flow span {
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,106,26,.06);
+  font-size: 14px;
+}
+
+.flow b { color: var(--ember); }
+
+/* Footer and toast */
+
+.foot {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.toast {
+  display: none;
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  padding: 10px 20px;
+  border: 1px solid rgba(255,140,60,.5);
+  border-radius: 999px;
+  background: #1A0F09;
+  color: var(--amber);
+  box-shadow: 0 0 24px var(--glow);
+  font-size: 14px;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .nav-toggle { display: flex; }
+
+  .nav { display: none; }
+
+  .nav.open { display: flex; }
+
+  .env { display: none; }
+
+  .columns { grid-template-columns: 1fr; }
+
+  main { padding-top: 76px; }
+
+  .logout-button {
+    top: 16px;
+    right: 20px;
+    padding: 9px 18px;
+  }
+
+  .event { grid-template-columns: 60px 10px 1fr; }
+
+  .event .badge {
+    grid-column: 3;
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+</style>
 </head>
 
 <body>
-  <!-- Sticky navigation -->
-  <header class="site-header">
-    <div class="page-shell nav-inner">
-      <a class="brand" href="#home" aria-label="HoneyShield home">
-        <span class="shield-mark" aria-hidden="true"></span>
-        <span>HONEYSHIELD</span>
-        <span class="status-dot" aria-hidden="true"></span>
-      </a>
 
-      <nav class="nav-links" aria-label="Main navigation">
-        <a class="login-link" href="login.html">Login</a>
-      </nav>
+<div class="shell">
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      ◈ HONEYSHIELD
+      <small>Early warning system</small>
     </div>
-  </header>
 
-  <main id="home">
-    <!-- Hero: copy on the left, terminal preview on the right -->
-    <section class="page-shell hero" aria-labelledby="hero-title">
-      <div class="hero-content">
-        <p class="eyebrow">
-          <span>EARLY WARNING SYSTEM // LIVE</span>
-          <span class="status-dot is-live" aria-hidden="true"></span>
-        </p>
+    <button class="nav-toggle" id="navToggle" type="button"
+      aria-expanded="false" aria-controls="mainNav">
+      <span>☰</span>Workspace
+    </button>
 
-        <h1 id="hero-title">Ransomware doesn't knock. We hear it first.</h1>
+    <nav class="nav" id="mainNav" aria-label="Main navigation">
+      <button class="active" data-page="signal"><span>◉</span>Signal room</button>
+      <button data-page="events"><span>⌁</span>Event explorer</button>
+      <button data-page="sensors"><span>⌗</span>Sensor health</button>
+      <button data-page="email"><span>↗</span>Email delivery</button>
+    </nav>
 
-        <p class="hero-copy">
-          HoneyShield plants decoy files. When ransomware touches them, you get an email in
-          <strong>less than 3 seconds</strong>. Before your real files are gone.
-        </p>
+    <div class="env">
+      Environment<br>
+      <strong>VirtualBox · Lab network</strong><br><br>
+      Detection engine<br>
+      <strong>Isolation Forest · v1.0</strong><br><br>
+      Mode<br>
+      <strong class="demo">Demo data</strong>
+    </div>
 
-        <div class="hero-actions">
-          <a class="primary-button" href="register.html">
-            <a href="Login.html" class="primary-button" onclick="startMonitoring(); return false;">
-    <span>Start Monitoring</span>
-    <i data-lucide="arrow-right" width="17" height="17"></i>
-</a>
-          <a class="text-button" href="#how-it-works">
-            <span>See How It Works</span>
-            <i data-lucide="arrow-right" aria-hidden="true" width="17" height="17"></i>
-          </a>
+  </aside>
+
+  <main>
+
+    <button type="button" class="logout-button" onclick="logoutUser()">Log out</button>
+
+    <!-- Signal room -->
+
+    <section class="page active" id="signal">
+
+      <header class="top">
+        <div>
+          <h1>Signal room</h1>
+          <p class="subtitle">A quiet view of the decoys. A clear signal when behavior changes.</p>
+        </div>
+      </header>
+
+      <div class="metrics">
+
+        <div class="metric" style="--accent:var(--green)">
+          <div class="label">Active decoys</div>
+          <div class="value">2 / 2</div>
+          <div class="note">Cowrie · honey files</div>
         </div>
 
-        <p class="trust-note">No agent. No slowdown. Used by 42 sysadmins.</p>
+        <div class="metric">
+          <div class="label">Signals today</div>
+          <div class="value">14</div>
+          <div class="note">+5 compared with yesterday</div>
+        </div>
+
+        <div class="metric" style="--accent:var(--red)">
+          <div class="label">Needs attention</div>
+          <div class="value">1</div>
+          <div class="note">High confidence anomaly</div>
+        </div>
+
+        <div class="metric" style="--accent:var(--green)">
+          <div class="label">Email delivery</div>
+          <div class="value" id="deliveryMetric">3 / 6</div>
+          <div class="note">Sample delivery records</div>
+        </div>
+
       </div>
 
-      <aside aria-label="Example threat detection terminal">
-        <div class="terminal">
-          <div class="terminal-bar" aria-hidden="true">
-            <span class="terminal-control"></span>
-            <span class="terminal-control"></span>
-            <span class="terminal-control"></span>
+      <section class="threat-card">
+
+        <div class="threat-head">
+          <div>
+            <h2>Threat levels</h2>
+            <div class="note">Signal distribution for the selected sensor</div>
           </div>
-          <div class="terminal-body" role="img" aria-label="Illustrative log showing a decoy file detected, an email alert sent, and an attack isolated">
-            <div class="terminal-time">[2026-06-10 14:23:17]</div>
-            <div class="terminal-event">[DETECTED] decoy_file_01.docx touched</div>
-            <div class="terminal-gap"></div>
-            <div class="terminal-time">[2026-06-10 14:23:17]</div>
-            <div class="terminal-event">-&gt; Email Alert Sent</div>
-            <div class="terminal-gap"></div>
-            <div class="terminal-time">[2026-06-10 14:23:18]</div>
-            <div class="terminal-event">-&gt; Attack Isolated</div>
-            <div class="terminal-prompt" aria-hidden="true">&gt;_</div>
+
+          <div class="threat-controls">
+            <select id="threatSourceFilter" aria-label="Filter graph by sensor">
+              <option value="ALL">All sensors</option>
+              <option value="HONEY FILE">Honey file</option>
+              <option value="COWRIE SSH">Cowrie SSH</option>
+            </select>
+
+            <select id="threatSeverityFilter" aria-label="Highlight threat level">
+              <option value="ALL">All threat levels</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
           </div>
         </div>
-      </aside>
-    </section>
 
-    <!-- Three-step product explanation -->
-    <section class="page-shell" id="how-it-works" aria-labelledby="steps-title">
-      <h2 class="section-heading" id="steps-title">HOW IT WORKS</h2>
+        <div id="threatChart"></div>
+        <div class="threat-foot" id="threatChartFoot"></div>
 
-      <div class="steps">
-        <article class="step">
-          <h3>Plant</h3>
-          <div class="step-rule" aria-hidden="true"></div>
-          <p>We place decoy files (honeypots) in your system. They look real, but are safe to touch.</p>
-          <i class="step-arrow" data-lucide="arrow-right" aria-hidden="true" width="22" height="22"></i>
-        </article>
+      </section>
 
-        <article class="step">
-          <h3>Detect</h3>
-          <div class="step-rule" aria-hidden="true"></div>
-          <p>If ransomware touches a decoy file, the system can flag the activity for investigation using behavioural signals.</p>
-          <i class="step-arrow" data-lucide="arrow-right" aria-hidden="true" width="22" height="22"></i>
-        </article>
+      <div class="columns">
 
-        <article class="step">
-          <h3>Alert</h3>
-          <div class="step-rule" aria-hidden="true"></div>
-          <p>Receive an alert so you can investigate and respond before your real files are affected.</p>
-        </article>
+        <section>
+
+          <div class="sectionhead">
+            <h2>Recent signals</h2>
+            <span class="mono">Latest first · local time</span>
+          </div>
+
+          <select class="filter" id="severityFilter" aria-label="Filter severity">
+            <option value="ALL">All severities</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+
+          <div class="events" id="recentEvents"></div>
+
+          <div class="note">Sample IP addresses are reserved for documentation.</div>
+
+        </section>
+
+        <aside>
+
+          <div class="sectionhead">
+            <h2>Sensor posture</h2>
+            <span class="mono">Lab status</span>
+          </div>
+
+          <div class="card">
+            <div class="statusrow">
+              <span>Cowrie SSH honeypot</span>
+              <span class="badge online">Listening</span>
+            </div>
+            <div class="statusmeta">Ubuntu Server · port 2222 · last event 2 min ago</div>
+            <div class="bar"><i style="width:100%"></i></div>
+          </div>
+
+          <div class="card">
+            <div class="statusrow">
+              <span>Honey-file watcher</span>
+              <span class="badge online">Watching</span>
+            </div>
+            <div class="statusmeta">/srv/honeyfiles · Watchdog · last event 2 min ago</div>
+            <div class="bar"><i style="width:100%"></i></div>
+          </div>
+
+          <div class="sectionhead">
+            <h2>Latest high signal</h2>
+            <span class="mono">Anomaly score 0.94</span>
+          </div>
+
+          <div class="alert">
+            <div class="alertlabel">Email alert sent</div>
+            <h3>Rapid file activity detected</h3>
+            <p>Administrator notified at 14:32. The alert includes the affected decoy path, event time, anomaly score, and source address.</p>
+
+            <button class="expand" id="evidenceButton" type="button">
+              Inspect detection evidence
+            </button>
+
+            <div class="evidence" id="evidence">
+              <div><b>Observed:</b> 18 rename and write events in 4 seconds</div>
+              <div><b>Model:</b> Isolation Forest · anomaly score 0.94</div>
+              <div><b>Interpretation:</b> High-risk behavior on a monitored decoy file</div>
+              <div>An anomaly score is a model signal, not proof of ransomware.</div>
+            </div>
+          </div>
+
+        </aside>
+
       </div>
+
     </section>
+
+    <!-- Event explorer -->
+
+    <section class="page" id="events">
+
+      <div>
+        <h1>Event explorer</h1>
+        <p class="subtitle">Review the observable behavior that contributed to each signal.</p>
+      </div>
+
+      <select class="filter" id="tableFilter" aria-label="Filter event severity">
+        <option value="ALL">All severities</option>
+        <option value="HIGH">High</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="LOW">Low</option>
+      </select>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Severity</th>
+              <th>Sensor</th>
+              <th>Event</th>
+              <th>Evidence</th>
+              <th>Email status</th>
+            </tr>
+          </thead>
+          <tbody id="eventTable"></tbody>
+        </table>
+      </div>
+
+      <p class="note">These records are illustrative. Connect your Cowrie JSON and Watchdog CSV for live investigation.</p>
+
+    </section>
+
+    <!-- Sensor health -->
+
+    <section class="page" id="sensors">
+
+      <div>
+        <h1>Sensor health</h1>
+        <p class="subtitle">Monitor the components that collect and analyse HoneyShield signals.</p>
+      </div>
+
+      <div class="sensor-grid" id="sensorGrid"></div>
+
+      <div class="sectionhead">
+        <h2>Detection path</h2>
+        <span class="mono">Project pipeline</span>
+      </div>
+
+      <div class="flow">
+        <span>Cowrie / Watchdog</span><b>→</b>
+        <span>JSON / CSV logs</span><b>→</b>
+        <span>Pandas preprocessing</span><b>→</b>
+        <span>Isolation Forest</span><b>→</b>
+        <span>Dashboard + email</span>
+      </div>
+
+      <p class="note">Component health values are illustrative until connected to live checks.</p>
+
+    </section>
+
+    <!-- Email delivery -->
+
+    <section class="page" id="email">
+
+      <div>
+        <h1>Email delivery</h1>
+        <p class="subtitle">See who receives each alert and whether it was sent, is sending, is queued, or failed.</p>
+      </div>
+
+      <div class="email-summary">
+
+        <div class="email-stat">
+          <span>Sent</span>
+          <strong id="sentCount">0</strong>
+        </div>
+
+        <div class="email-stat">
+          <span>Sending</span>
+          <strong id="sendingCount">0</strong>
+        </div>
+
+        <div class="email-stat">
+          <span>Queued</span>
+          <strong id="queuedCount">0</strong>
+        </div>
+
+        <div class="email-stat">
+          <span>Failed</span>
+          <strong id="failedCount">0</strong>
+        </div>
+
+      </div>
+
+      <div class="sectionhead">
+        <h2>Email notification history</h2>
+
+        <select class="filter" id="emailStatusFilter" aria-label="Filter email status" style="margin:0">
+          <option value="ALL">All delivery statuses</option>
+          <option value="SENT">Sent</option>
+          <option value="SENDING">Sending</option>
+          <option value="QUEUED">Queued</option>
+          <option value="FAILED">Failed</option>
+        </select>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Recipient</th>
+              <th>Subject / alert</th>
+              <th>Threat</th>
+              <th>Delivery status</th>
+            </tr>
+          </thead>
+          <tbody id="emailTable"></tbody>
+        </table>
+      </div>
+
+      <p class="note">These are example records. Real emails require a connected email service and a configured administrator address.</p>
+
+    </section>
+
+    <footer class="foot">
+      HoneyShield · Early warning system · Sample data. Connect project logs and model outputs for live results.
+    </footer>
+
   </main>
 
-  <!-- Compact footer -->
-  <footer class="page-shell site-footer">
-     <p><center>
-                    <strong>HoneyShield</strong> 
-                   <small> Honeypot-Based Ransomware Early Warning System
-                </p>
+</div>
 
-                <p>
-                    B.Sc. Computer Science · Academic Year 2026–2027</small>
-                </p><center>
+<div class="toast" id="toast" role="status"></div>
 
-  </footer>
+<script>
 
-  <script>
-    // Render Lucide's inline SVG icons. The shield logo is custom CSS.
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
-   
-  </script>
+const $ = id => document.getElementById(id);
+
+const COLORS = {
+  HIGH: "#FF715B",
+  MEDIUM: "#F2B84B",
+  LOW: "#9BCE82"
+};
+
+const LEVELS = ["HIGH", "MEDIUM", "LOW"];
+
+const events = [
+
+  {
+    time: "14:32:10",
+    severity: "HIGH",
+    source: "HONEY FILE",
+    title: "Rapid rename pattern on /srv/share/finance_q4.xlsx",
+    detail: "Watchdog · 18 file events in 4 seconds · score 0.94 · 203.0.113.42",
+    email: "SENT"
+  },
+
+  {
+    time: "14:27:03",
+    severity: "MEDIUM",
+    source: "COWRIE SSH",
+    title: "Repeated credential attempts against decoy host",
+    detail: "Cowrie · 27 failed logins · session c0w-8e21 · 203.0.113.17",
+    email: "QUEUED"
+  },
+
+  {
+    time: "14:15:41",
+    severity: "LOW",
+    source: "HONEY FILE",
+    title: "Decoy document opened",
+    detail: "Watchdog · read event · score 0.28 · 203.0.113.88",
+    email: "NOT SENT"
+  },
+
+  {
+    time: "13:58:22",
+    severity: "MEDIUM",
+    source: "COWRIE SSH",
+    title: "Reconnaissance command sequence observed",
+    detail: "Cowrie · 6 commands · session c0w-8d94 · 203.0.113.17",
+    email: "NOT SENT"
+  },
+
+  {
+    time: "13:42:06",
+    severity: "LOW",
+    source: "HONEY FILE",
+    title: "Decoy directory listed",
+    detail: "Watchdog · directory access · score 0.19 · 203.0.113.63",
+    email: "NOT SENT"
+  }
+
+];
+
+const emailRecords = [
+
+  {
+    time: "14:32:12",
+    recipient: "security-admin@example.com",
+    subject: "HIGH alert: rapid honey-file activity",
+    details: "Triggered by 18 rename/write events · anomaly score 0.94",
+    threat: "HIGH",
+    status: "SENT"
+  },
+
+  {
+    time: "14:27:05",
+    recipient: "soc-team@example.com",
+    subject: "MEDIUM alert: repeated SSH login attempts",
+    details: "27 failed login attempts recorded by Cowrie",
+    threat: "MEDIUM",
+    status: "SENDING"
+  },
+
+  {
+    time: "14:27:05",
+    recipient: "security-admin@example.com",
+    subject: "MEDIUM alert: repeated SSH login attempts",
+    details: "Waiting for the notification service to process this alert",
+    threat: "MEDIUM",
+    status: "QUEUED"
+  },
+
+  {
+    time: "13:58:24",
+    recipient: "security-admin@example.com",
+    subject: "MEDIUM alert: reconnaissance commands observed",
+    details: "Delivery could not be confirmed in this demo record",
+    threat: "MEDIUM",
+    status: "FAILED"
+  },
+
+  {
+    time: "12:16:43",
+    recipient: "soc-team@example.com",
+    subject: "HIGH alert: honey-file access detected",
+    details: "Decoy file opened and modified · score 0.91",
+    threat: "HIGH",
+    status: "SENT"
+  },
+
+  {
+    time: "11:48:09",
+    recipient: "security-admin@example.com",
+    subject: "HIGH alert: suspicious file changes",
+    details: "Multiple file events detected by Watchdog · score 0.89",
+    threat: "HIGH",
+    status: "SENT"
+  }
+
+];
+
+const sensors = [
+
+  {
+    icon: "⌁",
+    name: "Cowrie SSH honeypot",
+    badge: "Online",
+    desc: "Decoy SSH service · Ubuntu Server · port 2222",
+    k: "Event source",
+    v: "JSON logs",
+    pct: 96
+  },
+
+  {
+    icon: "▧",
+    name: "Watchdog file monitor",
+    badge: "Watching",
+    desc: "Honey-file change and access detection",
+    k: "Monitored path",
+    v: "/srv/honeyfiles",
+    pct: 100
+  },
+
+  {
+    icon: "◈",
+    name: "Honey-file decoys",
+    badge: "Armed",
+    desc: "Decoy documents used to reveal suspicious access",
+    k: "Files monitored",
+    v: "12 sample files",
+    pct: 88
+  },
+
+  {
+    icon: "▤",
+    name: "Log collector",
+    badge: "Online",
+    desc: "Collects Cowrie and Watchdog event records",
+    k: "Formats",
+    v: "JSON · CSV",
+    pct: 93
+  },
+
+  {
+    icon: "▦",
+    name: "Pandas preprocessing",
+    badge: "Ready",
+    desc: "Cleans and prepares event features for analysis",
+    k: "Pipeline",
+    v: "Feature preparation",
+    pct: 91
+  },
+
+  {
+    icon: "◉",
+    name: "Isolation Forest model",
+    badge: "Ready",
+    desc: "Behavior-based anomaly detection",
+    k: "Model output",
+    v: "Anomaly score",
+    pct: 89
+  },
+
+  {
+    icon: "▣",
+    name: "Dashboard service",
+    badge: "Online",
+    desc: "Displays event records, threat levels, and system status",
+    k: "Interface",
+    v: "HoneyShield UI",
+    pct: 100
+  },
+
+  {
+    icon: "✉",
+    name: "Email notification service",
+    badge: "Demo queue",
+    badgeClass: "sending",
+    desc: "Shows sample delivery states for administrator alerts",
+    k: "Current mode",
+    v: "Not connected",
+    pct: 62
+  }
+
+];
+
+const filterBy = (list, key, value) =>
+  value === "ALL" ? list : list.filter(item => item[key] === value);
+
+const cls = text =>
+  text.toLowerCase().replace(/\s+/g, "-");
+
+/* Logout */
+
+function logoutUser() {
+
+  if (confirm("Are you sure you want to log out?")) {
+
+    sessionStorage.removeItem("loggedIn");
+    sessionStorage.removeItem("username");
+
+    window.location.href = "index.html";
+
+  }
+
+}
+
+/* Toast */
+
+function showToast(message) {
+
+  const toast = $("toast");
+
+  toast.textContent = message;
+  toast.style.display = "block";
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer = setTimeout(() => {
+    toast.style.display = "none";
+  }, 2200);
+
+}
+
+/* Threat chart */
+
+function renderThreatChart() {
+
+  const source = $("threatSourceFilter").value;
+  const highlight = $("threatSeverityFilter").value;
+
+  const list = filterBy(events, "source", source);
+
+  const counts = LEVELS.map(level =>
+    list.filter(e => e.severity === level).length
+  );
+
+  const max = Math.max(1, ...counts);
+
+  $("threatChart").innerHTML = LEVELS.map((level, i) => `
+
+    <div class="chart-row">
+
+      <span>${level[0] + level.slice(1).toLowerCase()}</span>
+
+      <div class="chart-track">
+
+        <div class="chart-fill ${
+          highlight !== "ALL" && highlight !== level ? "muted" : ""
+        }"
+        style="width:${Math.max(2, counts[i] / max * 100)}%;background:${COLORS[level]}">
+        </div>
+
+      </div>
+
+      <span class="chart-count">${counts[i]}</span>
+
+    </div>
+
+  `).join("");
+
+  $("threatChartFoot").textContent =
+    `${list.length} signal${list.length === 1 ? "" : "s"} · ${
+      source === "ALL" ? "all sensors" : source.toLowerCase()
+    } · demo data`;
+
+}
+
+/* Recent signals */
+
+function renderRecent() {
+
+  const list = filterBy(events, "severity", $("severityFilter").value);
+
+  const container = $("recentEvents");
+
+  if (!list.length) {
+
+    container.innerHTML =
+      '<div class="empty">No signals match this filter.</div>';
+
+    return;
+
+  }
+
+  container.innerHTML = list.map(e => `
+
+    <article class="event"
+      tabindex="0"
+      style="--color:${COLORS[e.severity]}">
+
+      <div class="time">${e.time}</div>
+
+      <i class="dot"></i>
+
+      <div>
+
+        <div class="event-title">${e.title}</div>
+
+        <div class="event-detail">
+          ${e.source} · ${e.detail}
+        </div>
+
+      </div>
+
+      <span class="badge ${cls(e.severity)}">${e.severity}</span>
+
+    </article>
+
+  `).join("");
+
+  const rows = container.querySelectorAll(".event");
+
+  rows.forEach((row, i) => {
+
+    const select = () => {
+
+      rows.forEach(r => r.classList.remove("selected"));
+
+      row.classList.add("selected");
+
+      showToast(
+        `Selected ${list[i].severity.toLowerCase()} signal · ${list[i].source}`
+      );
+
+    };
+
+    row.addEventListener("click", select);
+
+    row.addEventListener("keydown", ev => {
+      if (ev.key === "Enter") select();
+    });
+
+  });
+
+}
+
+/* Event table */
+
+function renderEventTable() {
+
+  const list = filterBy(events, "severity", $("tableFilter").value);
+
+  $("eventTable").innerHTML = list.map(e => `
+
+    <tr>
+
+      <td>${e.time}</td>
+
+      <td>
+        <span class="badge ${cls(e.severity)}">${e.severity}</span>
+      </td>
+
+      <td>${e.source}</td>
+
+      <td>${e.title}</td>
+
+      <td>${e.detail}</td>
+
+      <td>${e.email}</td>
+
+    </tr>
+
+  `).join("");
+
+}
+
+/* Email history */
+
+function renderEmailHistory() {
+
+  const visible = filterBy(
+    emailRecords,
+    "status",
+    $("emailStatusFilter").value
+  );
+
+  $("emailTable").innerHTML = visible.map(r => `
+
+    <tr>
+
+      <td>${r.time}</td>
+
+      <td>${r.recipient}</td>
+
+      <td>
+
+        <div>${r.subject}</div>
+
+        <div class="email-detail">${r.details}</div>
+
+      </td>
+
+      <td>
+        <span class="badge ${cls(r.threat)}">${r.threat}</span>
+      </td>
+
+      <td>
+        <span class="badge ${cls(r.status)}">${r.status}</span>
+      </td>
+
+    </tr>
+
+  `).join("");
+
+  const count = status =>
+    emailRecords.filter(r => r.status === status).length;
+
+  $("sentCount").textContent = count("SENT");
+  $("sendingCount").textContent = count("SENDING");
+  $("queuedCount").textContent = count("QUEUED");
+  $("failedCount").textContent = count("FAILED");
+
+  $("deliveryMetric").textContent =
+    `${count("SENT")} / ${emailRecords.length}`;
+
+}
+
+/* Sensor cards */
+
+function renderSensors() {
+
+  $("sensorGrid").innerHTML = sensors.map(s => `
+
+    <div class="card">
+
+      <div class="statusrow">
+
+        <span>
+          <span class="sensor-icon">${s.icon}</span>
+          ${s.name}
+        </span>
+
+        <span class="badge ${s.badgeClass || "online"}">${s.badge}</span>
+
+      </div>
+
+      <div class="statusmeta">${s.desc}</div>
+
+      <div class="sensor-meta">
+
+        <span>${s.k}</span>
+
+        <span>${s.v}</span>
+
+      </div>
+
+      <div class="bar">
+        <i style="width:${s.pct}%"></i>
+      </div>
+
+    </div>
+
+  `).join("");
+
+}
+
+/* Navigation */
+
+const navToggle = $("navToggle");
+const mainNav = $("mainNav");
+
+navToggle.addEventListener("click", () => {
+
+  const open = navToggle.getAttribute("aria-expanded") !== "true";
+
+  navToggle.setAttribute("aria-expanded", String(open));
+
+  mainNav.classList.toggle("open", open);
+
+});
+
+document.querySelectorAll(".nav button").forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    document.querySelectorAll(".nav button").forEach(b =>
+      b.classList.toggle("active", b === button)
+    );
+
+    document.querySelectorAll(".page").forEach(p =>
+      p.classList.toggle("active", p.id === button.dataset.page)
+    );
+
+    mainNav.classList.remove("open");
+
+    navToggle.setAttribute("aria-expanded", "false");
+
+  });
+
+});
+
+/* Filters */
+
+$("severityFilter").addEventListener("change", renderRecent);
+
+$("tableFilter").addEventListener("change", renderEventTable);
+
+$("emailStatusFilter").addEventListener("change", renderEmailHistory);
+
+$("threatSourceFilter").addEventListener("change", renderThreatChart);
+
+$("threatSeverityFilter").addEventListener("change", renderThreatChart);
+
+/* Evidence panel */
+
+$("evidenceButton").addEventListener("click", () => {
+
+  const open = $("evidence").classList.toggle("open");
+
+  $("evidenceButton").textContent = open
+    ? "Hide detection evidence"
+    : "Inspect detection evidence";
+
+});
+
+/* Initial rendering */
+
+renderRecent();
+
+renderEventTable();
+
+renderThreatChart();
+
+renderEmailHistory();
+
+renderSensors();
+
+</script>
+
 </body>
 </html>
